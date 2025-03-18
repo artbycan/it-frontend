@@ -12,5 +12,8 @@ export const API_ENDPOINTS = {
     delete: `${API_BASE_URL}/departments/delete`,
     getById: `${process.env.NEXT_PUBLIC_API_URL}/departments/getid`,
   },
+  auth: {
+    login: `${process.env.NEXT_PUBLIC_API_URL}/user/login`
+  }
   // Add more endpoint categories here as needed
 }

@@ -1,9 +1,12 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { logout } from '../utils/auth'
 
 const AdminLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const router = useRouter()
 
   const menuItems = [
     { name: 'หน้าแรก', path: '/', icon: '🏠' },
@@ -16,6 +19,11 @@ const AdminLayout = ({ children }) => {
     { name: 'ยี่ห้อ', path: '/admin/assetbrands', icon: '🏷️' },
     { name: 'รุ่น', path: '/admin/assetmodels', icon: '🔖' },
   ]
+
+  const handleLogout = () => {
+    logout()
+    router.push('/login')
+  }
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -36,13 +44,13 @@ const AdminLayout = ({ children }) => {
             </Link>
           ))}
           <div className="border-t border-gray-700 my-4"></div>
-          <Link
-            href="/logout"
+          <button
+            onClick={handleLogout}
             className="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
           >
             <span className="mr-3">🚪</span>
             ออกจากระบบ
-          </Link>
+          </button>
         </nav>
       </aside>
 
@@ -59,11 +67,6 @@ const AdminLayout = ({ children }) => {
             </button>
             <div className="flex items-center space-x-4">
               <span className="text-gray-700">Admin User</span>
-              <img
-                src="/avatar-placeholder.png"
-                alt="Profile"
-                className="w-8 h-8 rounded-full"
-              />
             </div>
           </div>
         </header>
