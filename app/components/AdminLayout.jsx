@@ -13,11 +13,11 @@ const AdminLayout = ({ children }) => {
     { name: 'แดชบอร์ด', path: '/admin/dashboard', icon: '📊' },
     { name: 'ครุภัณฑ์', path: '/admin/assets', icon: '💻' },
     { name: 'ผู้ใช้งาน', path: '/admin/users', icon: '👥' },
-    { name: 'อัพโหลด', path: '/admin/upload', icon: '📤' },
+    { name: 'ไฟล์อัพโหลด', path: '/admin/files', icon: '📤' },
     { name: 'แผนก', path: '/admin/departments', icon: '🏢' },
     { name: 'ประเภทครุภัณฑ์', path: '/admin/assettypes', icon: '📁' },
-    { name: 'ยี่ห้อ', path: '/admin/assetbrands', icon: '🏷️' },
-    { name: 'รุ่น', path: '/admin/assetmodels', icon: '🔖' },
+    { name: 'ยี่ห้อครุภัณฑ์', path: '/admin/assetbrands', icon: '🏷️' },
+    { name: 'รุ่นครุภัณฑ์', path: '/admin/assetmodels', icon: '🔖' },
   ]
 
   const handleLogout = () => {

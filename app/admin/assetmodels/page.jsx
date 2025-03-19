@@ -4,14 +4,14 @@ import AdminLayout from '../../components/AdminLayout'
 import { API_ENDPOINTS } from '../../config/api'
 import { getAuthHeaders } from '../../utils/auth'
 
-export default function AssettypesPage() {
-  const [assettypes, setAssettypes] = useState([])
+export default function AssetmodelsPage() {
+  const [assetmodels, setAssetmodels] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
-  const [selectedAssettype, setSelectedAssettype] = useState(null)
+  const [selectedAssetmodel, setSelectedAssetmodel] = useState(null)
   const [formData, setFormData] = useState({
-    assettypes_name: '',
-    assettypes_description: ''
+    assetmodel_name: '',
+    assetmodel_description: ''
   })
   const [pageSize, setPageSize] = useState(10)
   const [loading, setLoading] = useState(true)
@@ -24,40 +24,46 @@ export default function AssettypesPage() {
   // Add this with other state declarations
   const [searchTerm, setSearchTerm] = useState('')
 
-  // Add this function after the state declarations
-  const filteredAssettypes = assettypes.filter(assettype => {
+  // Update the filter function with null checks
+  const filteredAssetmodels = assetmodels.filter(assetmodel => {
+    // Return false if assetmodel is null or undefined
+    if (!assetmodel) return false
+    
     const searchLower = searchTerm.toLowerCase()
     return (
-      assettype.assettypes_name.toLowerCase().includes(searchLower) ||
-      assettype.assettypes_description.toLowerCase().includes(searchLower) ||
-      assettype.assettypes_id.toString().includes(searchLower)
+      (assetmodel.assetmodel_name?.toLowerCase() || '').includes(searchLower) ||
+      (assetmodel.assetmodel_description?.toLowerCase() || '').includes(searchLower) ||
+      (assetmodel.assetmodel_id?.toString() || '').includes(searchLower)
     )
   })
 
-  // Update the pagination calculations to use filteredAssettypes
-  const totalPages = Math.ceil(filteredAssettypes.length / itemsPerPage)
+  // Update the pagination calculations to use filteredAssetmodels
+  const totalPages = Math.ceil(filteredAssetmodels.length / itemsPerPage)
   const indexOfLastItem = currentPage * itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = filteredAssettypes.slice(indexOfFirstItem, indexOfLastItem)
+  const currentItems = filteredAssetmodels.slice(indexOfFirstItem, indexOfLastItem)
 
-  // Fetch assettypes
+  // Fetch assetmodels
   useEffect(() => {
-    fetchAssettypes()
+    fetchAssetmodels()
   }, [pageSize])
 
-  const fetchAssettypes = async () => {
+  // Update the fetchAssetmodels function to handle the data structure properly
+  const fetchAssetmodels = async () => {
     try {
       setLoading(true)
-      const response = await fetch(API_ENDPOINTS.assettypes.getAll, {
+      const response = await fetch(API_ENDPOINTS.assetmodels.getAll, {
         headers: getAuthHeaders()
       })
       const result = await response.json()
       if (result.status === 200) {
-        // Flatten the nested array structure
-        const flattenedData = result.data.map(item => item[0])
-        setAssettypes(flattenedData)
+        // Make sure we're getting valid data and filter out any null/undefined values
+        const validData = result.data
+          .map(item => Array.isArray(item) ? item[0] : item)
+          .filter(item => item !== null && item !== undefined)
+        setAssetmodels(validData)
       } else {
-        setError('Failed to fetch assettypes')
+        setError('Failed to fetch assetmodels')
       }
     } catch (error) {
       setError('Error: ' + error.message)
@@ -67,32 +73,32 @@ export default function AssettypesPage() {
   }
 
   const handleAdd = () => {
-    setSelectedAssettype(null)
-    setFormData({ assettypes_name: '', assettypes_description: '' })
+    setSelectedAssetmodel(null)
+    setFormData({ assetmodel_name: '', assetmodel_description: '' })
     setIsModalOpen(true)
   }
 
-  const handleEdit = (assettype) => {
-    setSelectedAssettype(assettype)
+  const handleEdit = (assetmodel) => {
+    setSelectedAssetmodel(assetmodel)
     setFormData({
-      assettypes_name: assettype.assettypes_name,
-      assettypes_description: assettype.assettypes_description
+      assetmodel_name: assetmodel.assetmodel_name,
+      assetmodel_description: assetmodel.assetmodel_description
     })
     setIsModalOpen(true)
   }
 
   const handleDelete = async (id) => {
-    if (confirm('คุณต้องการลบประเภทครุภัณฑ์นี้ใช่หรือไม่?')) {
+    if (confirm('คุณต้องการลบรุ่นครุภัณฑ์นี้ใช่หรือไม่?')) {
       try {
-        const response = await fetch(`${API_ENDPOINTS.assettypes.delete}/${id}`, {
+        const response = await fetch(`${API_ENDPOINTS.assetmodels.delete}/${id}`, {
           method: 'DELETE',
           headers: getAuthHeaders()
         })
         if (response.ok) {
-          fetchAssettypes()
+          fetchAssetmodels()
         }
       } catch (error) {
-        console.error('Error deleting assettype:', error)
+        console.error('Error deleting assetmodel:', error)
       }
     }
   }
@@ -100,15 +106,15 @@ export default function AssettypesPage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      if (selectedAssettype) {
-        // For editing existing assettype
+      if (selectedAssetmodel) {
+        // For editing existing assetmodel
         const updateData = {
-          assettypes_id: selectedAssettype.assettypes_id,
-          assettypes_name: formData.assettypes_name,
-          assettypes_description: formData.assettypes_description
+          assetmodel_id: selectedAssetmodel.assetmodel_id,
+          assetmodel_name: formData.assetmodel_name,
+          assetmodel_description: formData.assetmodel_description
         }
 
-        const response = await fetch(`${API_ENDPOINTS.assettypes.update}/`, {
+        const response = await fetch(`${API_ENDPOINTS.assetmodels.update}/`, {
           method: 'PUT',
           headers: getAuthHeaders(),
           body: JSON.stringify(updateData)
@@ -118,7 +124,7 @@ export default function AssettypesPage() {
 
         if (result.status === 200) {
           setIsModalOpen(false)
-          fetchAssettypes()
+          fetchAssetmodels()
           // Optional: Add success message
           alert(result.message)
         } else {
@@ -126,13 +132,13 @@ export default function AssettypesPage() {
           alert('เกิดข้อผิดพลาดในการแก้ไขข้อมูล: ' + result.message)
         }
       } else {
-        // For creating new assettype
-        const response = await fetch(API_ENDPOINTS.assettypes.create, {
+        // For creating new assetmodel
+        const response = await fetch(API_ENDPOINTS.assetmodels.create, {
           method: 'POST',
           headers: getAuthHeaders(),
           body: JSON.stringify({
-            assettypes_name: formData.assettypes_name,
-            assettypes_description: formData.assettypes_description
+            assetmodel_name: formData.assetmodel_name,
+            assetmodel_description: formData.assetmodel_description
           })
         })
 
@@ -140,7 +146,7 @@ export default function AssettypesPage() {
 
         if (result.status === 200) {
           setIsModalOpen(false)
-          fetchAssettypes() // Refresh the assettypes list
+          fetchAssetmodels() // Refresh the assetmodels list
           alert('เพิ่มข้อมูลสำเร็จ: ' + result.message)
         } else {
           alert('เกิดข้อผิดพลาดในการเพิ่มข้อมูล: ' + result.message)
@@ -152,8 +158,8 @@ export default function AssettypesPage() {
     }
   }
 
-  const handleShowDetails = (assettype) => {
-    setSelectedAssettype(assettype)
+  const handleShowDetails = (assetmodel) => {
+    setSelectedAssetmodel(assetmodel)
     setIsDetailsModalOpen(true)
   }
 
@@ -161,7 +167,7 @@ export default function AssettypesPage() {
     <AdminLayout>
       <div className="container mx-auto p-4">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">จัดการข้อมูลประเภทครุภัณฑ์</h1>
+          <h1 className="text-2xl font-bold">จัดการข้อมูลรุ่นครุภัณฑ์</h1>
           <div className="flex items-center space-x-4">
             <input
               type="text"
@@ -187,7 +193,7 @@ export default function AssettypesPage() {
               onClick={handleAdd}
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             >
-              เพิ่มประเภทครุภัณฑ์
+              เพิ่มรุ่นครุภัณฑ์
             </button>
           </div>
         </div>
@@ -202,10 +208,10 @@ export default function AssettypesPage() {
               <thead className="bg-gray-800">
                 <tr>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-white uppercase tracking-wider">
-                    รหัสประเภทครุภัณฑ์
+                    รหัสรุ่นครุภัณฑ์
                   </th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-white uppercase tracking-wider">
-                    ชื่อประเภทครุภัณฑ์
+                    ชื่อรุ่นครุภัณฑ์
                   </th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-white uppercase tracking-wider">
                     รายละเอียด
@@ -222,30 +228,30 @@ export default function AssettypesPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {currentItems.map((assettype) => (
-                  <tr key={assettype.assettypes_id}>
-                    <td className="px-6 py-4">{assettype.assettypes_id}</td>
-                    <td className="px-6 py-4">{assettype.assettypes_name}</td>
-                    <td className="px-6 py-4">{assettype.assettypes_description}</td>
-                    <td className="px-6 py-4">{new Date(assettype.created_at).toLocaleString('th-TH')}</td>
-                    <td className="px-6 py-4">{new Date(assettype.updated_at).toLocaleString('th-TH')}</td>
+                {currentItems.map((assetmodel) => (
+                  <tr key={assetmodel.assetmodel_id}>
+                    <td className="px-6 py-4">{assetmodel.assetmodel_id}</td>
+                    <td className="px-6 py-4">{assetmodel.assetmodel_name}</td>
+                    <td className="px-6 py-4">{assetmodel.assetmodel_description}</td>
+                    <td className="px-6 py-4">{new Date(assetmodel.created_at).toLocaleString('th-TH')}</td>
+                    <td className="px-6 py-4">{new Date(assetmodel.updated_at).toLocaleString('th-TH')}</td>
                     <td className="px-6 py-4 space-x-2">
                       <button
-                        onClick={() => handleShowDetails(assettype)}
+                        onClick={() => handleShowDetails(assetmodel)}
                         className="inline-flex items-center text-gray-600 hover:text-gray-800"
                         title="รายละเอียดเพิ่มเติม"
                       >
                         <span className="mr-1">ℹ️</span>
                       </button>
                       <button
-                        onClick={() => handleEdit(assettype)}
+                        onClick={() => handleEdit(assetmodel)}
                         className="inline-flex items-center text-blue-600 hover:text-blue-800"
                         title="แก้ไขข้อมูล"
                       >
                         <span className="mr-1">✏️</span>
                       </button>
                       <button
-                        onClick={() => handleDelete(assettype.assettypes_id)}
+                        onClick={() => handleDelete(assetmodel.assetmodel_id)}
                         className="inline-flex items-center text-red-600 hover:text-red-800"
                         title="ลบข้อมูล"
                       >
@@ -258,7 +264,7 @@ export default function AssettypesPage() {
             </table>
             <div className="px-6 py-4 bg-gray-50 flex items-center justify-between">
               <div>
-                แสดง {indexOfFirstItem + 1} ถึง {Math.min(indexOfLastItem, assettypes.length)} จาก {assettypes.length} รายการ
+                แสดง {indexOfFirstItem + 1} ถึง {Math.min(indexOfLastItem, assetmodels.length)} จาก {assetmodels.length} รายการ
               </div>
               <div className="flex items-center space-x-2">
                 <button
@@ -329,15 +335,15 @@ export default function AssettypesPage() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div className="bg-white p-6 rounded-lg w-full max-w-md">
               <h2 className="text-xl font-bold mb-4">
-                {selectedAssettype ? 'แก้ไขประเภทครุภัณฑ์' : 'เพิ่มประเภทครุภัณฑ์'}
+                {selectedAssetmodel ? 'แก้ไขรุ่นครุภัณฑ์' : 'เพิ่มรุ่นครุภัณฑ์'}
               </h2>
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium mb-1">ชื่อประเภทครุภัณฑ์</label>
+                  <label className="block text-sm font-medium mb-1">ชื่อรุ่นครุภัณฑ์</label>
                   <input
                     type="text"
-                    value={formData.assettypes_name}
-                    onChange={(e) => setFormData({ ...formData, assettypes_name: e.target.value })}
+                    value={formData.assetmodel_name}
+                    onChange={(e) => setFormData({ ...formData, assetmodel_name: e.target.value })}
                     className="w-full p-2 border rounded"
                     required
                   />
@@ -345,8 +351,8 @@ export default function AssettypesPage() {
                 <div className="mb-4">
                   <label className="block text-sm font-medium mb-1">รายละเอียด</label>
                   <textarea
-                    value={formData.assettypes_description}
-                    onChange={(e) => setFormData({ ...formData, assettypes_description: e.target.value })}
+                    value={formData.assetmodel_description}
+                    onChange={(e) => setFormData({ ...formData, assetmodel_description: e.target.value })}
                     className="w-full p-2 border rounded"
                     rows="3"
                   />
@@ -371,11 +377,11 @@ export default function AssettypesPage() {
           </div>
         )}
 
-        {isDetailsModalOpen && selectedAssettype && (
+        {isDetailsModalOpen && selectedAssetmodel && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div className="bg-white p-6 rounded-lg w-full max-w-2xl">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold">รายละเอียดประเภทครุภัณฑ์</h2>
+                <h2 className="text-xl font-bold">รายละเอียดรุ่นครุภัณฑ์</h2>
                 <button
                   onClick={() => setIsDetailsModalOpen(false)}
                   className="text-gray-500 hover:text-gray-700"
@@ -386,27 +392,27 @@ export default function AssettypesPage() {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm font-medium text-gray-500">รหัสประเภทครุภัณฑ์</p>
-                    <p className="mt-1">{selectedAssettype.assettypes_id}</p>
+                    <p className="text-sm font-medium text-gray-500">รหัสรุ่นครุภัณฑ์</p>
+                    <p className="mt-1">{selectedAssetmodel.assetmodel_id}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-500">ชื่อประเภทครุภัณฑ์</p>
-                    <p className="mt-1">{selectedAssettype.assettypes_name}</p>
+                    <p className="text-sm font-medium text-gray-500">ชื่อรุ่นครุภัณฑ์</p>
+                    <p className="mt-1">{selectedAssetmodel.assetmodel_name}</p>
                   </div>
                   <div className="col-span-2">
                     <p className="text-sm font-medium text-gray-500">รายละเอียด</p>
-                    <p className="mt-1">{selectedAssettype.assettypes_description}</p>
+                    <p className="mt-1">{selectedAssetmodel.assetmodel_description}</p>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-500">วันที่สร้าง</p>
                     <p className="mt-1">
-                      {new Date(selectedAssettype.created_at).toLocaleString('th-TH')}
+                      {new Date(selectedAssetmodel.created_at).toLocaleString('th-TH')}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-500">วันที่แก้ไข</p>
                     <p className="mt-1">
-                      {new Date(selectedAssettype.updated_at).toLocaleString('th-TH')}
+                      {new Date(selectedAssetmodel.updated_at).toLocaleString('th-TH')}
                     </p>
                   </div>
                 </div>
