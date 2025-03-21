@@ -35,6 +35,10 @@ export const API_ENDPOINTS = {
   files: {
     getRange: `${process.env.NEXT_PUBLIC_API_URL}/files/range`,
     count: `${process.env.NEXT_PUBLIC_API_URL}/files/count`,
+  },
+  assets: {
+    getRange: `${process.env.NEXT_PUBLIC_API_URL}/assets/get`,
+    add: `${process.env.NEXT_PUBLIC_API_URL}/assets/add`,
   }
   // Add more endpoint categories here as needed
 }
