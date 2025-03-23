@@ -1,34 +1,21 @@
-'use client'
-import { useState, useEffect } from 'react'
+'use server'
 import { API_ENDPOINTS } from '../config/api'
 
-const AssetTable = () => {
-  const [assets, setAssets] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-
-  useEffect(() => {
-    const fetchAssets = async () => {
-      try {
-        const response = await fetch(API_ENDPOINTS.assets.getAll)
-        const result = await response.json()
-        if (result.status === 200) {
-          setAssets(result.data)
-        } else {
-          setError('Failed to fetch data')
-        }
-      } catch (err) {
-        setError('Error: ' + err)
-      } finally {
-        setLoading(false)
-      }
+async function getAssets() {
+  try {
+    const response = await fetch(`${API_ENDPOINTS.assets.getRange}/0/0`)
+    const result = await response.json()
+    if (result.status === 200) {
+      return result.data
     }
+    throw new Error('Failed to fetch data')
+  } catch (err) {
+    throw new Error(`Error: ${err.message}`)
+  }
+}
 
-    fetchAssets()
-  }, [])
-
-  if (loading) return <div className="text-center p-4">Loading...</div>
-  if (error) return <div className="text-center p-4 text-red-500">{error}</div>
+export default async function AssetTable() {
+  const assets = await getAssets()
 
   return (
     <div className="container mx-auto p-4">
@@ -64,5 +51,3 @@ const AssetTable = () => {
     </div>
   )
 }
-
-export default AssetTable

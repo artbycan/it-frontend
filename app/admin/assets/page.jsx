@@ -1,10 +1,10 @@
 'use client'
 import { useState, useEffect } from 'react'
-import AdminLayout from '../../components/AdminLayout'
-import AssetsDetailsModal from '../components/assets/AssetsDetailsModal'
-import AddAssetForm from '../components/assets/AddAssetForm'
-import { API_ENDPOINTS } from '../../config/api'
-import { getAuthHeaders } from '../../utils/auth'
+import AdminLayout from '@/app/components/AdminLayout'
+import AssetsDetailsModal from '@/app/components/assets/AssetsDetailsModal'
+import AddAssetForm from '@/app/components/assets/AddAssetForm'
+import { API_ENDPOINTS } from '@/app/config/api'
+import { getAuthHeaders } from '@/app//utils/auth'
 
 const formatAssetId = (id) => {
   return `A${String(id).padStart(10, '0')}`
@@ -27,9 +27,10 @@ export default function AssetsPage() {
   const fetchAssets = async () => {
     try {
       setLoading(true)
-      const min = (currentPage - 1) * pageSize
-      const max = min + pageSize
-      
+      //const min = (currentPage - 1) * pageSize
+      //const max = min + pageSize
+      const max = 0
+      const min = 0
       const response = await fetch(`${API_ENDPOINTS.assets.getRange}/${min}/${max}`, {
         headers: getAuthHeaders()
       })

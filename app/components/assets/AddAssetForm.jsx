@@ -3,6 +3,10 @@ import { API_ENDPOINTS } from '@/app/config/api'
 import SearchSelectBrand from '@/app/components/SearchSelectBrand'
 import SearchSelectType from '@/app/components/SearchSelectType'
 import SearchSelectAssetmodel from '@/app/components/SearchSelectAssetmodel'
+import SearchSelectDepartments from '@/app/components/SearchSelectDepartments'
+import UploadFile from '@/app/components/UploadFile'
+import AddAssetForm2 from '@/app/components/assets/AddAssetForm2' 
+
 
 export default function AddAssetForm({ onSuccess, onClose }) {
   const [currentStep, setCurrentStep] = useState(1)
@@ -94,7 +98,21 @@ export default function AddAssetForm({ onSuccess, onClose }) {
       case 2:
         return (
           <div className="space-y-4">
-            <h3 className="font-semibold">Step 2: เลือกรุ่น</h3>
+            <h3 className="font-semibold">Step 2: เลือกหน่วยงาน</h3>
+            <SearchSelectDepartments
+              apiUrl={API_ENDPOINTS.departments.getAll}
+              labelKey="departments_name"
+              valueKey="departments_id"
+              placeholder="ค้นหาหน่วยงาน"
+              onSelect={(value) => setFormData(prev => ({ ...prev, departments_id: value }))}
+              required
+            />
+          </div>
+        )
+      case 3:
+        return (
+          <div className="space-y-4">
+            <h3 className="font-semibold">Step 3: เลือกรุ่น</h3>
             <SearchSelectAssetmodel
               apiUrl={API_ENDPOINTS.assetmodels.getAll}
               labelKey="assetmodel_name"
@@ -105,10 +123,10 @@ export default function AddAssetForm({ onSuccess, onClose }) {
             />
           </div>
         )
-      case 3:
+      case 4:
         return (
           <div className="space-y-4">
-            <h3 className="font-semibold">Step 3: เลือกประเภท</h3>
+            <h3 className="font-semibold">Step 4: เลือกประเภท</h3>
             <SearchSelectType
               apiUrl={API_ENDPOINTS.assettypes.getAll}
               labelKey="assettypes_name"
@@ -119,77 +137,31 @@ export default function AddAssetForm({ onSuccess, onClose }) {
             />
           </div>
         )
-      case 4:
+      case 5:
         return (
           <div className="space-y-4">
-            <h3 className="font-semibold">Step 4: กรอกข้อมูลครุภัณฑ์</h3>
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                { name: 'assets_name', label: 'ชื่อครุภัณฑ์' },
-                { name: 'assets_num2', label: 'เลขครุภัณฑ์ 2' },
-                { name: 'assets_num', label: 'เลขครุภัณฑ์' },
-                { name: 'price', label: 'ราคา', type: 'number' },
-                { name: 'assets_in', label: 'วันที่รับเข้า', type: 'date' },
-                { name: 'warranty', label: 'วันเวลาสิ้นสุดรับประกัน',type: 'date' },
-                { name: 'serial_number', label: 'Serial Number' },
-                { name: 'purchase_date', label: 'วันที่ซื้อ/รับเข้า', type: 'date' },
-                //{ name: 'status', label: 'สถานะ' },
-              ].map((field) => (
-                <div key={field.name} className="flex flex-col">
-                  <label htmlFor={field.name} className="mb-1 text-sm text-gray-600">
-                    {field.label}
-                  </label>
-                  <input
-                    id={field.name}
-                    type={field.type || 'text'}
-                    name={field.name}
-                    placeholder={field.label}
-                    value={formData[field.name]}
-                    onChange={handleChange}
-                    className="border rounded px-3 py-2"
-                    required
-                  />
-                </div>
-              ))}
-              <div>
-                <label htmlFor="note" className="mb-1 text-sm text-gray-600">
-                    หมายเหตุ
-                    </label>
-                <textarea 
-                    id="note" 
-                    name="note" 
-                    placeholder="หมายเหตุ" 
-                    value={formData.note} 
-                    onChange={handleChange} 
-                    className="border rounded px-3 py-2" 
-                />
-                </div>
-              <div>
-                <label htmlFor="status" className="mb-1 text-sm text-gray-600">สถานะ</label>
-                <select
-                  id="status"
-                  name="status"
-                  value={formData.status}
-                  onChange={handleChange}
-                  className="border rounded px-3 py-2"
-                  required
-                >
-                    <option selected>โปรดเลือกสถานะ</option>
-                    <option value="0">ใช้งานอยู่</option>
-                    <option value="1">ชำรุด</option>
-                    <option value="2">เสื่อมสภาพ</option>
-                    <option value="3">เสื่อมสภาพอย่างร้ายแรง</option>
-                    <option value="4">ประกัน</option>
-                    <option value="5">ส่งซ่อม</option>
-                    <option value="6">ส่งเคลม</option>
-                    <option value="7">ส่งขาย</option>
-                    <option value="8">ส่งบริจาค</option>  
-                    <option value="9">ส่งทำลาย</option>
-                    <option value="9">จำหน่าย</option>
-                </select>
-              </div>
-            </div>
+            <h3 className="font-semibold">Step 5: อัพโหลดรูปภาพ</h3>
+            <UploadFile 
+              apiUrl={`${API_ENDPOINTS.files.upLoad}`}
+              onUploadSuccess={(uploadedFiles) => {
+                // Handle uploadedFiles as a string since it's already comma-separated
+                setFormData(prev => ({ 
+                  ...prev, 
+                  img_url: uploadedFiles // Remove .join(',') since uploadedFiles is already a string
+                }))
+              }}
+              maxFiles={5}
+              acceptedFileTypes="image/*"
+              required={true}
+            />
           </div>
+        )
+      case 6:
+        return (
+          <AddAssetForm2
+            formData={formData}
+            handleChange={handleChange}
+          />
         )
       default:
         return null
@@ -228,7 +200,7 @@ export default function AddAssetForm({ onSuccess, onClose }) {
                   ย้อนกลับ
                 </button>
               )}
-              {currentStep < 4 && (
+              {currentStep < 6 && (
                 <button
                   type="button"
                   onClick={handleNext}

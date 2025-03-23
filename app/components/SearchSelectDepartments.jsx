@@ -1,11 +1,11 @@
 'use client'
 import { useState, useEffect } from 'react'
 
-export default function SearchSelectBrand({ 
-  apiUrl, 
-  labelKey, 
-  valueKey, 
-  placeholder, 
+export default function SearchSelectDepartments({ 
+  apiUrl = 'http://localhost:8087/departments/get',
+  labelKey = 'departments_name',
+  valueKey = 'departments_id',
+  placeholder = 'ค้นหาแผนก/หน่วยงาน',
   onSelect,
   required = false 
 }) {
@@ -13,7 +13,7 @@ export default function SearchSelectBrand({
   const [searchTerm, setSearchTerm] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [isOpen, setIsOpen] = useState(false) // Add state for dropdown visibility
+  const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -70,7 +70,7 @@ export default function SearchSelectBrand({
                 onClick={() => {
                   onSelect(item[valueKey])
                   setSearchTerm(item[labelKey])
-                  setIsOpen(false) // Hide dropdown after selection
+                  setIsOpen(false)
                 }}
               >
                 {item[labelKey]}

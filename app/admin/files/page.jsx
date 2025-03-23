@@ -4,54 +4,51 @@ import AdminLayout from '../../components/AdminLayout'
 import FileDetailsModal from '../../components/FileDetailsModal'
 import { API_ENDPOINTS } from '../../config/api'
 import { getAuthHeaders } from '../../utils/auth'
+import Image from 'next/image'
 
-// Add this helper function at the top of the file, after imports
 const formatFileId = (id) => {
-  return `F${String(id).padStart(10, '0')}`
+  return `F${String(id).padStart(5, '0')}`
 }
 
 export default function FilesPage() {
   const [files, setFiles] = useState([])
-  const [pageSize] = useState(100)
+  const [pageSize, setPageSize] = useState(10)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
-  const [totalCount, setTotalCount] = useState(0)
   const [selectedFile, setSelectedFile] = useState(null)
-  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
 
-  // Filter function for files
+  // Filter files
   const filteredFiles = files.filter(file => {
-    if (!file) return false
-    
     const searchLower = searchTerm.toLowerCase()
     return (
-      (file.file_name?.toLowerCase() || '').includes(searchLower) ||
-      (file.file_id?.toString() || '').includes(searchLower)
+      formatFileId(file.file_id).toLowerCase().includes(searchLower) ||
+      file.file_name.toLowerCase().includes(searchLower)
     )
   })
-  .sort((a, b) => b.file_id - a.file_id) // Sort by file_id in descending order
 
   // Pagination calculations
-  const totalPages = Math.ceil(totalCount / pageSize)
+  const totalPages = Math.ceil(filteredFiles.length / pageSize)
   const indexOfLastItem = currentPage * pageSize
   const indexOfFirstItem = indexOfLastItem - pageSize
   const currentItems = filteredFiles.slice(indexOfFirstItem, indexOfLastItem)
 
-  // Fetch files with min/max parameters
+  // Fetch files
+  useEffect(() => {
+    fetchFiles()
+  }, [pageSize])
+
   const fetchFiles = async () => {
     try {
       setLoading(true)
-      const min = (currentPage - 1) * pageSize // Calculate starting index
-      const max = min + pageSize // Next 100 records
-      
-      const response = await fetch(`${API_ENDPOINTS.files.getRange}/${min}/${max}`, {
+      const response = await fetch(`${API_ENDPOINTS.files.getRange}/0/0`, {
         headers: getAuthHeaders()
       })
       const result = await response.json()
       if (result.status === 200) {
-        setFiles(result.data || [])
+        setFiles(result.data)
       } else {
         setError('Failed to fetch files')
       }
@@ -62,31 +59,9 @@ export default function FilesPage() {
     }
   }
 
-  // Add function to fetch total count
-  const fetchTotalCount = async () => {
-    try {
-      const response = await fetch(API_ENDPOINTS.files.count, {
-        headers: getAuthHeaders()
-      })
-      const result = await response.json()
-      if (result.status === 200) {
-        setTotalCount(result.data)
-      }
-    } catch (error) {
-      console.error('Error fetching total count:', error)
-    }
-  }
-
-  // Update useEffect to fetch both files and total count
-  useEffect(() => {
-    fetchFiles()
-    fetchTotalCount()
-  }, [currentPage, pageSize])
-
-  // Add handler for showing details
   const handleShowDetails = (file) => {
     setSelectedFile(file)
-    setIsDetailsModalOpen(true)
+    setShowPreview(true)
   }
 
   return (
@@ -105,6 +80,19 @@ export default function FilesPage() {
               }}
               className="border rounded px-3 py-1 w-64"
             />
+            <select
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value))
+                setCurrentPage(1)
+              }}
+              className="border rounded px-2 py-1"
+            >
+              <option value={5}>5 รายการ</option>
+              <option value={10}>10 รายการ</option>
+              <option value={20}>20 รายการ</option>
+              <option value={50}>50 รายการ</option>
+            </select>
           </div>
         </div>
 
@@ -127,36 +115,58 @@ export default function FilesPage() {
                     วันที่สร้าง
                   </th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-white uppercase tracking-wider">
+                    วันที่แก้ไข
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-white uppercase tracking-wider">
                     จัดการ
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {currentItems.map((file) => (
-                  <tr key={file.file_id}>
-                    <td className="px-6 py-4">{formatFileId(file.file_id)}</td>
-                    <td className="px-6 py-4">{file.file_name}</td>
-                    <td className="px-6 py-4">
-                      {new Date(file.created_at).toLocaleString('th-TH')}
-                    </td>
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={() => handleShowDetails(file)}
-                        className="inline-flex items-center text-gray-600 hover:text-gray-800"
-                        title="รายละเอียดเพิ่มเติม"
-                      >
-                        <span className="mr-1">ℹ️</span>
-                      </button>
+                {currentItems.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
+                      ไม่พบข้อมูล
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  currentItems.map((file) => (
+                    <tr key={file.file_id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4">{formatFileId(file.file_id)}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center">
+                          {/* <img //ส่วนแสดงผลรุปภาพตัวอย่างขนาดเล็ก
+                            src={`${API_ENDPOINTS.files.get}/${file.file_name}`}
+                            alt={file.file_name}
+                            width={40}
+                            height={40}
+                            className="rounded mr-2 object-cover"
+                          /> */}
+                          {file.file_name}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        {new Date(file.created_at).toLocaleString('th-TH')}
+                      </td>
+                      <td className="px-6 py-4">
+                        {new Date(file.updated_at).toLocaleString('th-TH')}
+                      </td>
+                      <td className="px-6 py-4">
+                        <button
+                          onClick={() => handleShowDetails(file)}
+                          className="text-blue-600 hover:text-blue-800"
+                        >
+                          รายละเอียด
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
             <div className="px-6 py-4 bg-gray-50 flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <span>
-                  แสดง {((currentPage - 1) * pageSize) + 1} ถึง {Math.min(currentPage * pageSize, totalCount)} จาก {totalCount} รายการ
-                </span>
+              <div>
+                แสดง {indexOfFirstItem + 1} ถึง {Math.min(indexOfLastItem, files.length)} จาก {files.length} รายการ
               </div>
               <div className="flex items-center space-x-2">
                 <button
@@ -222,15 +232,17 @@ export default function FilesPage() {
             </div>
           </div>
         )}
-      </div>
 
-      {/* Add FileDetailsModal */}
-      {isDetailsModalOpen && (
-        <FileDetailsModal
-          file={selectedFile}
-          onClose={() => setIsDetailsModalOpen(false)}
-        />
-      )}
+        {showPreview && selectedFile && (
+          <FileDetailsModal
+            file={selectedFile}
+            onClose={() => {
+              setShowPreview(false)
+              setSelectedFile(null)
+            }}
+          />
+        )}
+      </div>
     </AdminLayout>
   )
 }

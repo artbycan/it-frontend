@@ -1,44 +1,47 @@
-//export const API_BASE_URL = 'http://localhost:8087'
+export const API_BASE_URL = 'http://localhost:8087'
 
 export const API_ENDPOINTS = {
+  main: `${API_BASE_URL}`,
   departments: {
-    getAll: `${process.env.NEXT_PUBLIC_API_URL}/departments/get`,
-    create: `${process.env.NEXT_PUBLIC_API_URL}/departments/add`,
-    update: `${process.env.NEXT_PUBLIC_API_URL}/departments/update`,
-    delete: `${process.env.NEXT_PUBLIC_API_URLL}/departments/delete`,
-    getById: `${process.env.NEXT_PUBLIC_API_URL}/departments/getid`,
+    getAll: `${API_BASE_URL}/departments/get`,
+    create: `${API_BASE_URL}/departments/add`,
+    update: `${API_BASE_URL}/departments/update`,
+    delete: `${API_BASE_URL}/departments/delete`,
+    getById: `${API_BASE_URL}/departments/getid`,
   },
   auth: {
-    login: `${process.env.NEXT_PUBLIC_API_URL}/user/login`
+    login: `${API_BASE_URL}/user/login`
   },
   assettypes: {
-    getAll: `${process.env.NEXT_PUBLIC_API_URL}/assettypes/get`,
-    getById: `${process.env.NEXT_PUBLIC_API_URL}/assettypes/getid`,
-    create: `${process.env.NEXT_PUBLIC_API_URL}/assettypes/add`,
-    update: `${process.env.NEXT_PUBLIC_API_URL}/assettypes/update`,
-    delete: `${process.env.NEXT_PUBLIC_API_URL}/assettypes/delete`,
+    getAll: `${API_BASE_URL}/assettypes/get`,
+    getById: `${API_BASE_URL}/assettypes/getid`,
+    create: `${API_BASE_URL}/assettypes/add`,
+    update: `${API_BASE_URL}/assettypes/update`,
+    delete: `${API_BASE_URL}/assettypes/delete`,
   },
   assetbrands: {
-    getAll: `${process.env.NEXT_PUBLIC_API_URL}/assetbrands/get`,
-    getById: `${process.env.NEXT_PUBLIC_API_URL}/assetbrands/getid`,
-    create: `${process.env.NEXT_PUBLIC_API_URL}/assetbrands/add`,
-    update: `${process.env.NEXT_PUBLIC_API_URL}/assetbrands/update`,
-    delete: `${process.env.NEXT_PUBLIC_API_URL}/assetbrands/delete`,
+    getAll: `${API_BASE_URL}/assetbrands/get`,
+    getById: `${API_BASE_URL}/assetbrands/getid`,
+    create: `${API_BASE_URL}/assetbrands/add`,
+    update: `${API_BASE_URL}/assetbrands/update`,
+    delete: `${API_BASE_URL}/assetbrands/delete`,
   },
   assetmodels: {
-    getAll: `${process.env.NEXT_PUBLIC_API_URL}/assetmodels/get`,
-    getById: `${process.env.NEXT_PUBLIC_API_URL}/assetmodels/getid`,
-    create: `${process.env.NEXT_PUBLIC_API_URL}/assetmodels/add`,
-    update: `${process.env.NEXT_PUBLIC_API_URL}/assetmodels/update`,
-    delete: `${process.env.NEXT_PUBLIC_API_URL}/assetmodels/delete`,
+    getAll: `${API_BASE_URL}/assetmodels/get`,
+    getById: `${API_BASE_URL}/assetmodels/getid`,
+    create: `${API_BASE_URL}/assetmodels/add`,
+    update: `${API_BASE_URL}/assetmodels/update`,
+    delete: `${API_BASE_URL}/assetmodels/delete`,
   },
   files: {
-    getRange: `${process.env.NEXT_PUBLIC_API_URL}/files/range`,
-    count: `${process.env.NEXT_PUBLIC_API_URL}/files/count`,
+    getRange: `${API_BASE_URL}/files/range`,
+    count: `${API_BASE_URL}/files/count`,
+    upLoad: `${API_BASE_URL}/uploadfiles`,
+    get: `${API_BASE_URL}/file`,
   },
   assets: {
-    getRange: `${process.env.NEXT_PUBLIC_API_URL}/assets/get`,
-    add: `${process.env.NEXT_PUBLIC_API_URL}/assets/add`,
+    getRange: `${API_BASE_URL}/assets/get`,
+    add: `${API_BASE_URL}/assets/add`,
   }
   // Add more endpoint categories here as needed
 }

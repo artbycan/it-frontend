@@ -1,4 +1,6 @@
+'use client'
 import { useState } from 'react';
+import {API_ENDPOINTS} from '@/app/config/api';
 
 export default function FileDetailsModal({ file, onClose }) {
   const [imageError, setImageError] = useState(false);
@@ -9,7 +11,8 @@ export default function FileDetailsModal({ file, onClose }) {
   const isImage = file.file_name.match(/\.(jpg|jpeg|png|gif|webp)$/i);
 
   // Generate image URL
-  const imageUrl = `${process.env.NEXT_PUBLIC_API_URL}/file/${file.file_name}`;
+  const imageUrl = `${API_ENDPOINTS.main}/file/${encodeURIComponent(file.file_name)}`;
+  //console.log('imageUrl:', imageUrl);
 
   // Add the same helper function
   const formatFileId = (id) => {
