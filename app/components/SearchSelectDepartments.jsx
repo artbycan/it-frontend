@@ -1,8 +1,9 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { API_ENDPOINTS } from '@/app/config/api'
 
 export default function SearchSelectDepartments({ 
-  apiUrl = 'http://localhost:8087/departments/get',
+  apiUrl = `${API_ENDPOINTS.main}/departments/get`,
   labelKey = 'departments_name',
   valueKey = 'departments_id',
   placeholder = 'ค้นหาแผนก/หน่วยงาน',

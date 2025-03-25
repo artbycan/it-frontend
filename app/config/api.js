@@ -12,6 +12,14 @@ export const API_ENDPOINTS = {
   auth: {
     login: `${API_BASE_URL}/user/login`
   },
+  users:{
+    getAll: `${API_BASE_URL}/users/get`,
+    create: `${API_BASE_URL}/users/add`,
+    update: `${API_BASE_URL}/users/update`,
+    delete: `${API_BASE_URL}/users/delete`,
+    getById: `${API_BASE_URL}/users/getid`,
+    getRoles: `${API_BASE_URL}/users/roles`,
+  },
   assettypes: {
     getAll: `${API_BASE_URL}/assettypes/get`,
     getById: `${API_BASE_URL}/assettypes/getid`,
