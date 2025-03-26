@@ -1,5 +1,5 @@
 'use client'
-import { use, useState } from 'react'
+import DepartmentDetails from '@/app/components/departments/DepartmentDetails'
 
 export default function UserDetailsModal({ user, onClose }) {
   if (!user) return null
@@ -21,6 +21,7 @@ export default function UserDetailsModal({ user, onClose }) {
             <p className="text-sm font-medium text-gray-500">รหัสผู้ใช้</p>
             <p className="mt-1">{user.user_id}</p>
           </div>
+
           <div>
             <p className="text-sm font-medium text-gray-500">ชื่อผู้ใช้</p>
             <p className="mt-1">{user.username}</p>
@@ -50,30 +51,22 @@ export default function UserDetailsModal({ user, onClose }) {
             <p className="mt-1">{user.line_id || '-'}</p>
           </div>
           <div>
+            <p className="text-sm font-medium text-gray-500">แผนก</p>
+            <div className="mt-1">
+              <DepartmentDetails departmentId={user.departments_id} />
+            </div>
+          </div>
+          <div>
             <p className="text-sm font-medium text-gray-500">สถานะ</p>
             <p className="mt-1">
-              <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                user.status !== '' ? 'bg-green-100 text-green-800' :
-                'bg-gray-100 text-gray-800'
-              }`}>
-                {user.status || 'ไม่ระบุ'}
-              </span>
+              {user.status || '-' }
             </p>
           </div>
           <div>
             <p className="text-sm font-medium text-gray-500">บทบาท</p>
             <p className="mt-1">
-              <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                user.role !== '' ? 'bg-blue-100 text-blue-800' :
-                'bg-gray-100 text-gray-800'
-              }`}>
-                {user.role || 'ไม่ระบุ'}
-              </span>
+              {user.role || '-' }
             </p>
-          </div>
-          <div className="col-span-2">
-            <p className="text-sm font-medium text-gray-500">ที่อยู่</p>
-            <p className="mt-1">{user.address || '-'}</p>
           </div>
           <div>
             <p className="text-sm font-medium text-gray-500">วันที่สร้าง</p>
@@ -82,6 +75,10 @@ export default function UserDetailsModal({ user, onClose }) {
           <div>
             <p className="text-sm font-medium text-gray-500">วันที่แก้ไข</p>
             <p className="mt-1">{user.updated_at ? new Date(user.updated_at).toLocaleString('th-TH') : '-'}</p>
+          </div>
+          <div className="col-span-2">
+            <p className="text-sm font-medium text-gray-500">ที่อยู่</p>
+            <p className="mt-1">{user.address || '-'}</p>
           </div>
         </div>
         <div className="mt-6 flex justify-end">

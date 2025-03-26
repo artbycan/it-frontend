@@ -5,7 +5,8 @@ import SearchSelectType from '@/app/components/SearchSelectType'
 import SearchSelectAssetmodel from '@/app/components/SearchSelectAssetmodel'
 import SearchSelectDepartments from '@/app/components/SearchSelectDepartments'
 import UploadFile from '@/app/components/UploadFile'
-import AddAssetForm2 from '@/app/components/assets/AddAssetForm2' 
+import AddAssetForm2 from '@/app/components/assets/AddAssetForm2'
+import SearchSelectUser from '@/app/components/users/SearchSelectUser'
 
 
 export default function AddAssetForm({ onSuccess, onClose }) {
@@ -45,7 +46,7 @@ export default function AddAssetForm({ onSuccess, onClose }) {
     e.preventDefault()
     setLoading(true)
     setError(null)
-    console.log('Submitting formData:', formData)
+    //onsole.log('Submitting formData:', formData)
 
     try {
       const response = await fetch(`${API_ENDPOINTS.assets.add}`, {
@@ -84,7 +85,22 @@ export default function AddAssetForm({ onSuccess, onClose }) {
       case 1:
         return (
           <div className="space-y-4">
+            <h3 className="font-semibold">Step 0: เลือกผู้ใช้</h3>
+            <h3>USERID : { formData.user_id }</h3>
+              <SearchSelectUser
+                value={ formData.user_id }
+                onChange={(userId) => {
+                  setFormData(prev => ({ ...prev, user_id: userId }))
+                }}
+                required
+            />
+          </div>
+        )
+      case 2:
+        return (
+          <div className="space-y-4">
             <h3 className="font-semibold">Step 1: เลือกยี่ห้อ</h3>
+            <h3>BRANDID : { formData.assetbrand_id }</h3>
             <SearchSelectBrand
               apiUrl={API_ENDPOINTS.assetbrands.getAll}
               labelKey="assetbrand_name"
@@ -95,10 +111,11 @@ export default function AddAssetForm({ onSuccess, onClose }) {
             />
           </div>
         )
-      case 2:
+      case 3:
         return (
           <div className="space-y-4">
             <h3 className="font-semibold">Step 2: เลือกหน่วยงาน</h3>
+            <h3>DEPARTMENTID : { formData.departments_id }</h3>
             <SearchSelectDepartments
               apiUrl={API_ENDPOINTS.departments.getAll}
               labelKey="departments_name"
@@ -109,10 +126,11 @@ export default function AddAssetForm({ onSuccess, onClose }) {
             />
           </div>
         )
-      case 3:
+      case 4:
         return (
           <div className="space-y-4">
             <h3 className="font-semibold">Step 3: เลือกรุ่น</h3>
+            <h3>ASSETMODELID : { formData.assetmodel_id }</h3>
             <SearchSelectAssetmodel
               apiUrl={API_ENDPOINTS.assetmodels.getAll}
               labelKey="assetmodel_name"
@@ -123,10 +141,11 @@ export default function AddAssetForm({ onSuccess, onClose }) {
             />
           </div>
         )
-      case 4:
+      case 5:
         return (
           <div className="space-y-4">
             <h3 className="font-semibold">Step 4: เลือกประเภท</h3>
+            <h3>ASSETTYPEID : { formData.assetstypes_id }</h3>
             <SearchSelectType
               apiUrl={API_ENDPOINTS.assettypes.getAll}
               labelKey="assettypes_name"
@@ -137,7 +156,7 @@ export default function AddAssetForm({ onSuccess, onClose }) {
             />
           </div>
         )
-      case 5:
+      case 6:
         return (
           <div className="space-y-4">
             <h3 className="font-semibold">Step 5: อัพโหลดรูปภาพ</h3>
@@ -156,7 +175,7 @@ export default function AddAssetForm({ onSuccess, onClose }) {
             />
           </div>
         )
-      case 6:
+      case 7:
         return (
           <AddAssetForm2
             formData={formData}
@@ -200,7 +219,7 @@ export default function AddAssetForm({ onSuccess, onClose }) {
                   ย้อนกลับ
                 </button>
               )}
-              {currentStep < 6 && (
+              {currentStep < 7 && (
                 <button
                   type="button"
                   onClick={handleNext}

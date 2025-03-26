@@ -1,24 +1,28 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 
-export const USER_STATUSES = [
-  { id: 'active', name: 'Active' },
-  { id: 'panding', name: 'Panding' },
-  { id: 'rejected', name: 'Rejected' },
-  { id: 'deleted', name: 'Deleted' }
+export const USER_ROLES = [
+  { id: 'admin', name: 'Admin' },
+  { id: 'user', name: 'ผู้ใช้งานทั่วไป' },
+  { id: 'guest', name: 'Guest' },
+  { id: 'superadmin', name: 'Super Admin' },
+  { id: 'manager', name: 'ผู้จัดการ' },
+  { id: 'new_user', name: 'ผู้ใช้งานใหม่' },
 ]
 
-export const getStatusColor = (statusId) => {
-  switch(statusId) {
-    case 'active': return 'bg-green-100 text-green-800'
-    case 'panding': return 'bg-yellow-100 text-yellow-800'
-    case 'rejected': return 'bg-red-100 text-red-800'
-    case 'deleted': return 'bg-orange-100 text-gray-800'
+export const getRoleColor = (roleId) => {
+  switch(roleId) {
+    case 'admin': return 'bg-purple-100 text-purple-800'
+    case 'user': return 'bg-blue-100 text-blue-800'
+    case 'guest': return 'bg-yellow-100 text-yellow-800'
+    case 'superadmin': return 'bg-red-100 text-red-800'
+    case 'manager': return 'bg-green-100 text-green-800'
+    case 'new_user': return 'bg-indigo-100 text-indigo-800'
     default: return 'bg-gray-100 text-gray-800'
   }
 }
 
-export default function SearchSelectUserStatus({ value, onChange, required = false }) {
+export default function SearchSelectUserRole({ value, onChange, required = false }) {
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const dropdownRef = useRef(null)
@@ -33,10 +37,10 @@ export default function SearchSelectUserStatus({ value, onChange, required = fal
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const selectedStatus = USER_STATUSES.find(status => status.id === value)
+  const selectedRole = USER_ROLES.find(role => role.id === value)
   
-  const filteredStatuses = USER_STATUSES.filter(status =>
-    status.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredRoles = USER_ROLES.filter(role =>
+    role.name.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   return (
@@ -45,9 +49,9 @@ export default function SearchSelectUserStatus({ value, onChange, required = fal
         <input
           type="text"
           className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 cursor-pointer"
-          value={selectedStatus ? selectedStatus.name : ''}
+          value={selectedRole ? selectedRole.name : ''}
           onClick={() => setIsOpen(!isOpen)}
-          placeholder="เลือกสถานะ"
+          placeholder="เลือกบทบาท"
           readOnly
           required={required}
         />
@@ -61,31 +65,30 @@ export default function SearchSelectUserStatus({ value, onChange, required = fal
       {isOpen && (
         <div className="absolute z-10 mt-1 w-full rounded-md bg-white shadow-lg">
           <div className="p-2 border-b">
-            <div>{value}</div>
             <input
               type="text"
               className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholder="ค้นหาสถานะ..."
+              placeholder="ค้นหาบทบาท..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onClick={(e) => e.stopPropagation()}
             />
           </div>
           <ul className="max-h-60 overflow-auto py-1">
-            {filteredStatuses.map((status) => (
+            {filteredRoles.map((role) => (
               <li
-                key={status.id}
+                key={role.id}
                 onClick={() => {
-                  onChange(status.id)
+                  onChange(role.id)
                   setIsOpen(false)
                   setSearchTerm('')
                 }}
                 className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${
-                  value === status.id ? 'bg-blue-50' : ''
+                  value === role.id ? 'bg-blue-50' : ''
                 }`}
               >
-                <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(status.id)}`}>
-                  {status.name}
+                <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getRoleColor(role.id)}`}>
+                  {role.name}
                 </span>
               </li>
             ))}

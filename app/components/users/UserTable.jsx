@@ -4,6 +4,9 @@ import { API_ENDPOINTS } from '@/app/config/api'
 import { getAuthHeaders } from '@/app/utils/auth'
 import UserDetailsModal from './UserDetailsModal'
 import EditUserModal from './EditUserModal'
+import DeleteUserModal from './DeleteUserModal'
+import { USER_ROLES, getRoleColor } from './SearchSelectUserRole'
+import { USER_STATUSES, getStatusColor } from './SearchSelectUserStatus'
 
 export default function UserTable() {
   const [users, setUsers] = useState([])
@@ -16,6 +19,8 @@ export default function UserTable() {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [selectedUserForEdit, setSelectedUserForEdit] = useState(null)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [selectedUserForDelete, setSelectedUserForDelete] = useState(null)
 
   const pageSizeOptions = [5, 10, 20, 50, 100]
 
@@ -59,18 +64,18 @@ export default function UserTable() {
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber)
 
-  const getStatusColor = (status) => {
-    switch(status) {
-      case '': return 'bg-red-100 text-red-800'
-      default: return 'bg-green-100 text-green-800'
-    }
+  // Remove the old getStatusColor function
+
+  // Add function to get status name
+  const getStatusName = (statusId) => {
+    const status = USER_STATUSES.find(s => s.id === statusId)
+    return status ? status.name : 'ไม่ระบุ'
   }
 
-  const getRoleColor = (role) => {
-    switch(role) {
-      case '': return 'bg-yellow-100 text-yellow-800'
-      default: return 'bg-blue-100 text-blue-800'
-    }
+  // Add function to get role name
+  const getRoleName = (roleId) => {
+    const role = USER_ROLES.find(r => r.id === roleId)
+    return role ? role.name : 'ไม่ระบุ'
   }
 
   const handleShowDetails = (user) => {
@@ -87,6 +92,10 @@ export default function UserTable() {
     setUsers(users.map(u => 
       u.user_id === updatedUser.user_id ? updatedUser : u
     ))
+  }
+
+  const handleDeleteSuccess = (deletedUserId) => {
+    setUsers(users.filter(user => user.user_id !== deletedUserId))
   }
 
   if (loading) return <div className="text-center py-4">กำลังโหลด...</div>
@@ -169,12 +178,12 @@ export default function UserTable() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(user.status)}`}>
-                    {user.status || 'ไม่ระบุ'}
+                    {getStatusName(user.status)}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleColor(user.role)}`}>
-                    {user.role || 'ไม่ระบุ'}
+                    {getRoleName(user.role)}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -195,6 +204,16 @@ export default function UserTable() {
                       title="แก้ไข"
                     >
                       ✏️
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSelectedUserForDelete(user)
+                        setIsDeleteModalOpen(true)
+                      }}
+                      className="text-red-600 hover:text-red-800"
+                      title="ลบ"
+                    >
+                      🗑️
                     </button>
                   </div>
                 </td>
@@ -302,6 +321,17 @@ export default function UserTable() {
             setSelectedUserForEdit(null)
           }}
           onSuccess={handleEditSuccess}
+        />
+      )}
+
+      {isDeleteModalOpen && selectedUserForDelete && (
+        <DeleteUserModal
+          user={selectedUserForDelete}
+          onClose={() => {
+            setIsDeleteModalOpen(false)
+            setSelectedUserForDelete(null)
+          }}
+          onSuccess={handleDeleteSuccess}
         />
       )}
     </div>

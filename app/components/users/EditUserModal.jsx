@@ -5,6 +5,7 @@ import { getAuthHeaders } from '@/app/utils/auth'
 import SearchSelectDepartments from '@/app/components/users/SearchSelectDepartments'
 import SearchSelectUserStatus from '@/app/components/users/SearchSelectUserStatus'
 import SearchSelectGender from './SearchSelectGender'
+import SearchSelectUserRole from './SearchSelectUserRole'
 
 export default function EditUserModal({ user, onClose, onSuccess }) {
   const [formData, setFormData] = useState({
@@ -13,7 +14,7 @@ export default function EditUserModal({ user, onClose, onSuccess }) {
     f_name: user.f_name,
     l_name: user.l_name,
     email: user.email,
-    departments_id: user.department_id,
+    departments_id: user.departments_id || '',
     gender: user.gender || '',
     date_of_birth: user.date_of_birth || '',
     phone_number: user.phone_number || '',
@@ -74,7 +75,6 @@ export default function EditUserModal({ user, onClose, onSuccess }) {
             {error}
           </div>
         )}
-        <div>{formData.gender}{formData.departments_id}{formData.status}</div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -131,7 +131,7 @@ export default function EditUserModal({ user, onClose, onSuccess }) {
             </div>
   
             <div>
-              <label className="block text-sm font-medium text-gray-700">แผนก</label>
+              <label className="block text-sm font-medium text-gray-700">แผนก departments_id: {formData.departments_id}</label>
               <SearchSelectDepartments
                 value={formData.departments_id}
                 onChange={(departmentId) => setFormData({...formData, departments_id: departmentId})}
@@ -140,14 +140,90 @@ export default function EditUserModal({ user, onClose, onSuccess }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">เพศ</label>
+              <label className="block text-sm font-medium text-gray-700">เพศ gender value: {formData.gender}</label>
               <SearchSelectGender
                 value={formData.gender}
                 onChange={(genderId) => setFormData({...formData, gender: genderId})}
                 required
               />
             </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700">วันเกิด date_of_birth:{formData.date_of_birth}</label>
+              <input
+                type="date"
+                value={formData.date_of_birth}
+                onChange={(e) => setFormData({...formData, date_of_birth: e.target.value})}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+          
+            </div>
 
+            <div>
+              <label className="block text-sm font-medium text-gray-700">เบอร์โทร</label>
+              <input
+                type="number"
+                value={formData.phone_number}
+                onChange={(e) => setFormData({...formData, phone_number: e.target.value})}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                placeholder="0901221114" 
+                pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}" 
+                required 
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Line UID</label>
+              <input
+                type="text"
+                value={formData.line_id}
+                onChange={(e) => setFormData({...formData, line_id: e.target.value})}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Line Token</label>
+              <input
+                type="text"
+                value={formData.line_token}
+                onChange={(e) => setFormData({...formData, line_token: e.target.value})}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">บทบาท</label>
+              <SearchSelectUserRole
+                value={formData.role}
+                onChange={(roleId) => setFormData({...formData, role: roleId})}
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">ที่อยู่</label>
+              <textarea
+                rows = "5"
+                value={formData.address}
+                onChange={(e) => setFormData({...formData, address: e.target.value})}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+
+            <p>-</p>  
+            <p className="text-blue-600">userID : {formData.user_id}</p>
+            <p className="text-blue-600">ชื่อ-นามสกุล : {formData.f_name} {formData.l_name}</p>
+            <p className="text-blue-600">อีเมล : {formData.email}</p>
+            <p className="text-blue-600">รหัสแผนก : {formData.departments_id}</p>
+            <p className="text-blue-600">เพศ : {formData.gender}</p>
+            <p className="text-blue-600">วันเกิด : {formData.date_of_birth}</p>
+            <p className="text-blue-600">เบอร์โทร : {formData.phone_number}</p>
+            <p className="text-blue-600">ที่อยู่ : {formData.address}</p>
+            <p className="text-blue-600">สถานะ : {formData.status}</p>
+            <p className="text-blue-600">Line ID : {formData.line_id}</p>
+            <p className="text-blue-600">Line Token : {formData.line_token}</p>
+            <p className="text-blue-600">บทบาท : {formData.role}</p>          
             {/* Add more form fields as needed */}
           </div>
 
