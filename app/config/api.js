@@ -50,6 +50,10 @@ export const API_ENDPOINTS = {
   assets: {
     getRange: `${API_BASE_URL}/assets/get`,
     add: `${API_BASE_URL}/assets/add`,
+    update: `${API_BASE_URL}/assets/update`,
+    delete: `${API_BASE_URL}/assets/delete`,
+    getById: `${API_BASE_URL}/assets/getid`,
+    getฺByname: `${API_BASE_URL}/assets/getname`,
   }
   // Add more endpoint categories here as needed
 }

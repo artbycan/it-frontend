@@ -64,17 +64,11 @@ export default function SearchSelectUser({ value, onChange = () => {}, required 
     }
   }
 
-  const handleUserSelect = (userId) => {
-    if (typeof onChange === 'function') {
-      onChange(userId)
-      setIsOpen(false)
-      setSearchTerm('')
-    }
-  }
+
 
   return (
-    <div className="relative" ref={dropdownRef}>
-      <div className="relative">
+    <div className="relative_user" ref={dropdownRef}>
+      <div className="relative_user">
         <input
           type="text"
           className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 cursor-pointer"
@@ -112,7 +106,10 @@ export default function SearchSelectUser({ value, onChange = () => {}, required 
               filteredUsers.map((user) => (
                 <li
                   key={user.user_id}
-                  onClick={() => handleUserSelect(user.user_id)}
+                  onClick={() => onChange(user.user_id, {
+                    f_name: user.f_name,
+                    l_name: user.l_name
+                  })}
                   className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${
                     value === user.user_id ? 'bg-blue-50' : ''
                   }`}
@@ -121,7 +118,7 @@ export default function SearchSelectUser({ value, onChange = () => {}, required 
                     <div>
                       <div className="font-medium">{user.username}</div>
                       <div className="text-sm text-gray-500">
-                        {user.f_name} {user.l_name} - {user.email}
+                        ชื่อ :{user.f_name} นาามสกุล :{user.l_name} e-mail :{user.email}
                       </div>
                     </div>
                     <span className={`px-2 py-1 text-xs rounded-full font-medium ${getRoleColor(user.role)}`}>

@@ -1,22 +1,40 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { API_ENDPOINTS } from '@/app/config/api'
+import { getAuthHeaders } from '@/app/utils/auth'
 
-export default function SearchSelectDepartments({ 
-  apiUrl = `${API_ENDPOINTS.main}/departments/get`,
-  labelKey = 'departments_name',
-  valueKey = 'departments_id',
-  placeholder = 'ค้นหาแผนก/หน่วยงาน',
-  value,
-  onChange,
-  required = false 
-}) {
-  const [items, setItems] = useState([])
-  const [searchTerm, setSearchTerm] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState(null)
+export default function SearchSelectDepartments({ value, onChange, required = false }) {
+  const [departments, setDepartments] = useState([])
   const [isOpen, setIsOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const dropdownRef = useRef(null)
+
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const response = await fetch(API_ENDPOINTS.departments.getAll, {
+          headers: getAuthHeaders()
+        })
+        const result = await response.json()
+        
+        if (result.status === 200) {
+          // Flatten the nested array structure
+          const flattenedDepartments = result.data.map(deptArray => deptArray[0])
+          setDepartments(flattenedDepartments)
+        } else {
+          setError('ไม่สามารถดึงข้อมูลแผนกได้')
+        }
+      } catch (err) {
+        setError('เกิดข้อผิดพลาดในการเชื่อมต่อ')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchDepartments()
+  }, [])
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -28,41 +46,21 @@ export default function SearchSelectDepartments({
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  useEffect(() => {
-    const fetchItems = async () => {
-      setIsLoading(true)
-      try {
-        const response = await fetch(apiUrl)
-        const result = await response.json()
-        if (result.status === 200) {
-          setItems(result.data.flat())
-        } else {
-          setError(result.message)
-        }
-      } catch (err) {
-        setError(err.message)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    fetchItems()
-  }, [apiUrl])
-
-  const selectedItem = items.find(item => item[valueKey] === value)
+  const selectedDepartment = departments.find(dept => dept.departments_id === value)
   
-  const filteredItems = items.filter(item =>
-    item[labelKey].toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredDepartments = departments.filter(dept =>
+    dept.departments_name.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   return (
-    <div className="relative" ref={dropdownRef}>
-      <div className="relative">
+    <div className="relative_dpm" ref={dropdownRef}>
+      <div className="relative_dpm">
         <input
           type="text"
           className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 cursor-pointer"
-          value={selectedItem ? selectedItem[labelKey] : ''}
+          value={selectedDepartment ? selectedDepartment.departments_name : ''}
           onClick={() => setIsOpen(!isOpen)}
-          placeholder={placeholder}
+          placeholder="เลือกแผนก"
           readOnly
           required={required}
         />
@@ -79,31 +77,32 @@ export default function SearchSelectDepartments({
             <input
               type="text"
               className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              placeholder="ค้นหา..."
+              placeholder="ค้นหาแผนก..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onClick={(e) => e.stopPropagation()}
             />
           </div>
           <ul className="max-h-60 overflow-auto py-1">
-            {isLoading ? (
+            {loading ? (
               <li className="px-4 py-2 text-gray-500">กำลังโหลด...</li>
             ) : error ? (
               <li className="px-4 py-2 text-red-500">{error}</li>
-            ) : filteredItems.length > 0 ? (
-              filteredItems.map((item) => (
+            ) : filteredDepartments.length > 0 ? (
+              filteredDepartments.map((dept) => (
                 <li
-                  key={item[valueKey]}
+                  key={dept.departments_id}
                   onClick={() => {
-                    onChange(item[valueKey])
+                    onChange(dept.departments_id)
                     setIsOpen(false)
                     setSearchTerm('')
                   }}
                   className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${
-                    value === item[valueKey] ? 'bg-blue-50' : ''
+                    value === dept.departments_id ? 'bg-blue-50' : ''
                   }`}
                 >
-                  {item[labelKey]}
+                  <div className="font-medium">{dept.departments_name}</div>
+                  <div className="text-sm text-gray-500">{dept.department_description}</div>
                 </li>
               ))
             ) : (

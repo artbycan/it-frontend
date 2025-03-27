@@ -3,10 +3,10 @@ import { useState, useEffect, useRef } from 'react'
 import { API_ENDPOINTS } from '@/app/config/api'
 import { getAuthHeaders } from '@/app/utils/auth'
 
-export default function SearchSelectDepartments({ value, onChange, required = false }) {
+export default function SearchSelectDepartments({ value, onChange = () => {}, required = false }) {
   const [departments, setDepartments] = useState([])
-  const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
+  const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const dropdownRef = useRef(null)
@@ -21,10 +21,10 @@ export default function SearchSelectDepartments({ value, onChange, required = fa
         
         if (result.status === 200) {
           // Flatten the nested array structure
-          const flattenedDepartments = result.data.map(deptArray => deptArray[0])
+          const flattenedDepartments = result.data.map(departmentsArray => departmentsArray[0])
           setDepartments(flattenedDepartments)
         } else {
-          setError('ไม่สามารถดึงข้อมูลแผนกได้')
+          setError(result.message || 'ไม่สามารถดึงข้อมูลแผนกได้')
         }
       } catch (err) {
         setError('เกิดข้อผิดพลาดในการเชื่อมต่อ')
@@ -46,21 +46,21 @@ export default function SearchSelectDepartments({ value, onChange, required = fa
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const selectedDepartment = departments.find(dept => dept.departments_id === value)
+  const selectedDepartments = departments.find(departments => departments.departments_id === value)
   
-  const filteredDepartments = departments.filter(dept =>
-    dept.departments_name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredDepartments = departments.filter(departments =>
+    departments.departments_name.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   return (
-    <div className="relative" ref={dropdownRef}>
-      <div className="relative">
+    <div className="relative_departments" ref={dropdownRef}>
+      <div className="relative_departments">
         <input
           type="text"
           className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 cursor-pointer"
-          value={selectedDepartment ? selectedDepartment.departments_name : ''}
+          value={selectedDepartments ? `${selectedDepartments.departments_name}` : ''}
           onClick={() => setIsOpen(!isOpen)}
-          placeholder="เลือกแผนก"
+          placeholder="เลือกแผนก..."
           readOnly
           required={required}
         />
@@ -89,20 +89,27 @@ export default function SearchSelectDepartments({ value, onChange, required = fa
             ) : error ? (
               <li className="px-4 py-2 text-red-500">{error}</li>
             ) : filteredDepartments.length > 0 ? (
-              filteredDepartments.map((dept) => (
+              filteredDepartments.map((departments) => (
                 <li
-                  key={dept.departments_id}
-                  onClick={() => {
-                    onChange(dept.departments_id)
-                    setIsOpen(false)
-                    setSearchTerm('')
-                  }}
+                  key={departments.departments_id}
+                  onClick={() => onChange(departments.departments_id,{
+                    departments_name: departments.departments_name
+                  })}
                   className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${
-                    value === dept.departments_id ? 'bg-blue-50' : ''
+                    value === departments.departments_id ? 'bg-blue-50' : ''
                   }`}
                 >
-                  <div className="font-medium">{dept.departments_name}</div>
-                  <div className="text-sm text-gray-500">{dept.department_description}</div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium">{departments.departments_name}</div>
+                      <div className="text-sm text-gray-500">
+                        รหัสแผนก: {departments.departments_id}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        รายละเอียดแผนก: {departments.department_description}
+                      </div>
+                    </div>
+                  </div>
                 </li>
               ))
             ) : (

@@ -3,8 +3,10 @@ import { useState, useEffect } from 'react'
 import AdminLayout from '@/app/components/AdminLayout'
 import AssetsDetailsModal from '@/app/components/assets/AssetsDetailsModal'
 import AddAssetForm from '@/app/components/assets/AddAssetForm'
+import EditAssetForm from '@/app/components/assets/EditAssetForm'
 import { API_ENDPOINTS } from '@/app/config/api'
 import { getAuthHeaders } from '@/app//utils/auth'
+import Link from 'next/link'
 
 const formatAssetId = (id) => {
   return `A${String(id).padStart(10, '0')}`
@@ -21,6 +23,8 @@ export default function AssetsPage() {
   const [selectedAsset, setSelectedAsset] = useState(null)
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [selectedAssetForEdit, setSelectedAssetForEdit] = useState(null)
 
   const totalPages = Math.ceil(totalCount / pageSize)
 
@@ -54,6 +58,12 @@ export default function AssetsPage() {
 
   const handleAssetCreated = () => {
     fetchAssets()
+  }
+
+  const handleEditSuccess = (updatedAsset) => {
+    setAssets(assets.map(asset => 
+      asset.asset_id === updatedAsset.asset_id ? updatedAsset : asset
+    ))
   }
 
   useEffect(() => {
@@ -137,13 +147,23 @@ export default function AssetsPage() {
                     <td className="px-6 py-4">{`${asset.f_name} ${asset.l_name}`}</td>
                     <td className="px-6 py-4">{asset.status}</td>
                     <td className="px-6 py-4">
-                      <button
-                        onClick={() => handleShowDetails(asset)}
-                        className="inline-flex items-center text-gray-600 hover:text-gray-800"
-                        title="รายละเอียดเพิ่มเติม"
-                      >
-                        <span className="mr-1">ℹ️</span>
-                      </button>
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleShowDetails(asset)}
+                          className="text-blue-600 hover:text-blue-800"
+                          title="ดูรายละเอียด"
+                        >
+                          ℹ️
+                        </button>
+                        <Link href={`/admin/assets/edit/${asset.asset_id}`}>
+                          <button
+                            className="text-yellow-600 hover:text-yellow-800"
+                            title="แก้ไข"
+                          >
+                            ✏️
+                          </button>
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -168,6 +188,17 @@ export default function AssetsPage() {
           <AddAssetForm
             onClose={() => setIsAddModalOpen(false)}
             onSuccess={fetchAssets}
+          />
+        )}
+
+        {isEditModalOpen && selectedAssetForEdit && (
+          <EditAssetForm
+            asset={selectedAssetForEdit}
+            onClose={() => {
+              setIsEditModalOpen(false)
+              setSelectedAssetForEdit(null)
+            }}
+            onSuccess={handleEditSuccess}
           />
         )}
       </div>
