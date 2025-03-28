@@ -166,7 +166,7 @@ export default function EditAssetPage({ params }) {
       assetmodel_id: assetmodelsId,
       assetmodel_name: assetmodelsData.assetmodel_name,
     }));
-    setIsAssetbrandsSelectOpen(false);
+    setIsAssetmodelsSelectOpen(false);
   };
 
   if (loading)

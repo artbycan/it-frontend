@@ -106,7 +106,7 @@ export default function SearchSelectAssetmodels({ value, onChange = () => {}, re
                         รหัสรุ่นครุภัณฑ์: {assetmodels.assetmodel_id}
                       </div>
                       <div className="text-sm text-gray-500">
-                        รายละเอียดรุ่นครุภัณฑ์: {assetmodels.department_description}
+                        รายละเอียดรุ่นครุภัณฑ์: {assetmodels.assetmodel_description}
                       </div>
                     </div>
                   </div>

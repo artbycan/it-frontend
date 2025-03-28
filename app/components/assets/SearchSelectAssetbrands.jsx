@@ -129,7 +129,7 @@ export default function SearchSelectAssetbrands({
                       </div>
                       <div className="text-sm text-gray-500">
                         รายละเอียดยี่ห้อครุภัณฑ์:{" "}
-                        {assetbrands.department_description}
+                        {assetbrands.assetbrand_description}
                       </div>
                     </div>
                   </div>
