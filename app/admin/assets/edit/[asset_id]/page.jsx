@@ -9,6 +9,8 @@ import SearchSelectDepartments from "@/app/components/users/SearchSelectDepartme
 import SearchSelectAssettypes from "@/app/components/assets/SearchSelectAssettypes";
 import SearchSelectAssetbrands from "@/app/components/assets/SearchSelectAssetbrands";
 import SearchSelectAssetmodels from "@/app/components/assets/SearchSelectAssetmodels";
+import UploadFile from "@/app/components/UploadFile";
+import ImageDisplay from "@/app/components/ImageDisplay";
 
 export default function EditAssetPage({ params }) {
   const router = useRouter();
@@ -193,8 +195,28 @@ export default function EditAssetPage({ params }) {
       <div className="container mx-auto p-4">
         <div className="bg-white rounded-lg shadow p-6">
           <h1 className="text-2xl font-bold mb-6">แก้ไขข้อมูลครุภัณฑ์</h1>
-
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <div className="grid grid-cols-1 gap-6">
+                <label className="block text-sm font-medium text-gray-700">
+                  รูปภาพครุภัณฑ์
+                </label>
+                <div>{formData.img_url}</div>
+                <ImageDisplay urls={formData.img_url} />
+
+                <UploadFile
+                  apiUrl={`${API_ENDPOINTS.files.upLoad}`}
+                  onUploadSuccess={(urls) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      img_url: formData.img_url + "," + urls.join(","),
+                    }));
+                  }}
+                  maxFiles={5}
+                  acceptedFileTypes="image/*"
+                />
+              </div>
+            </div>
             <div className="grid grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700">

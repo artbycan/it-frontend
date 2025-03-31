@@ -2,21 +2,21 @@
 import { useState } from 'react'
 
 export default function UploadFile({ 
-  apiUrl = 'http://localhost:8087/uploadfiles/',
+  apiUrl,
   onUploadSuccess,
-  maxFiles = 5,
+  maxFiles = 10,
   acceptedFileTypes = "image/*",
   required = false 
 }) {
   const [files, setFiles] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [uploadedFiles, setUploadedFiles] = useState([])
+  const [uploadedUrls, setUploadedUrls] = useState([])
 
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files)
-    if (selectedFiles.length > maxFiles) {
-      setError(`Cannot upload more than ${maxFiles} files at once`)
+    if (selectedFiles.length + files.length > maxFiles) {
+      setError(`Cannot upload more than ${maxFiles} files in total`)
       return
     }
     setFiles(prevFiles => [...prevFiles, ...selectedFiles])
@@ -25,6 +25,13 @@ export default function UploadFile({
 
   const removeFile = (indexToRemove) => {
     setFiles(prevFiles => prevFiles.filter((_, index) => index !== indexToRemove))
+  }
+
+  const removeUploadedFile = (indexToRemove) => {
+    setUploadedUrls(prevUrls => prevUrls.filter((_, index) => index !== indexToRemove))
+    if (onUploadSuccess) {
+      onUploadSuccess(uploadedUrls.filter((_, index) => index !== indexToRemove))
+    }
   }
 
   const handleUpload = async (e) => {
@@ -54,11 +61,13 @@ export default function UploadFile({
       const result = await response.json()
 
       if (result.status === 200) {
-        const newFiles = result.data
-        setUploadedFiles(prev => [...prev, ...newFiles])
+        // Assuming the API returns an array of URLs in result.data
+        const newUrls = Array.isArray(result.data) ? result.data : [result.data]
+        const updatedUrls = [...uploadedUrls, ...newUrls]
+        setUploadedUrls(updatedUrls)
         setFiles([])
         if (onUploadSuccess) {
-          onUploadSuccess(newFiles.join(','))
+          onUploadSuccess(updatedUrls)
         }
       } else {
         setError(result.message || 'Upload failed')
@@ -79,7 +88,7 @@ export default function UploadFile({
           accept={acceptedFileTypes}
           onChange={handleFileChange}
           className="w-full"
-          required={required && uploadedFiles.length === 0}
+          required={required && uploadedUrls.length === 0}
           disabled={isLoading}
         />
         
@@ -93,6 +102,7 @@ export default function UploadFile({
                   <button 
                     onClick={() => removeFile(index)}
                     className="text-red-500 hover:text-red-700 ml-2"
+                    disabled={isLoading}
                   >
                     ✕
                   </button>
@@ -102,10 +112,30 @@ export default function UploadFile({
           </div>
         )}
 
-        {uploadedFiles.length > 0 && (
+        {uploadedUrls.length > 0 && (
           <div className="mt-2">
             <p className="text-sm text-green-600">Uploaded files:</p>
-            <p className="text-sm">{uploadedFiles.join(', ')}</p>
+            <ul className="list-disc list-inside">
+              {uploadedUrls.map((url, index) => (
+                <li key={index} className="text-sm flex items-center justify-between">
+                  <a 
+                    href={url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:text-blue-700"
+                  >
+                    {url.split('/').pop()}
+                  </a>
+                  <button 
+                    onClick={() => removeUploadedFile(index)}
+                    className="text-red-500 hover:text-red-700 ml-2"
+                    disabled={isLoading}
+                  >
+                    ✕
+                  </button>
+                </li>
+              ))}
+            </ul>
           </div>
         )}
 
