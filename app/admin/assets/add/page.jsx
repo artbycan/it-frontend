@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, use } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import AdminLayout from "@/app/components/AdminLayout";
 import { API_ENDPOINTS } from "@/app/config/api";
@@ -13,84 +13,75 @@ import AssetStatus from "@/app/components/assets/AssetStatus";
 import UploadFile from "@/app/components/UploadFile";
 import ImageDisplay from "@/app/components/ImageDisplay";
 
-export default function EditAssetPage({ params }) {
+export default function AddAssetPage() {
   const router = useRouter();
-  const assetId = use(params).asset_id; // Properly unwrap params
-  const [asset, setAsset] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [formData, setFormData] = useState(null);
-  const [saving, setSaving] = useState(false);
+  const [formData, setFormData] = useState({
+    assets_name: "",
+    assets_num: "",
+    assets_num2: "ไม่ระบุ",
+    assettypes_id: "",
+    assettypes_name: "",
+    assetbrand_id: "",
+    assetbrand_name: "",
+    assetmodel_id: "",
+    assetmodel_name: "",
+    price: "",
+    departments_id: "",
+    departments_name: "",
+    user_id: "",
+    name: "",
+    serial_number: "",
+    warranty: "",
+    purchase_date: "",
+    assets_in: "",
+    status: "1",
+    img_url: "noimg.jpg",
+    // Default image URL, can be changed later
+    note: ""
+  });
+  
+  // Remove asset-related states
   const [isUserSelectOpen, setIsUserSelectOpen] = useState(false);
   const [isDepartmentsSelectOpen, setIsDepartmentsSelectOpen] = useState(false);
   const [isAssettypesSelectOpen, setIsAssettypesSelectOpen] = useState(false);
   const [isAssetbrandsSelectOpen, setIsAssetbrandsSelectOpen] = useState(false);
   const [isAssetmodelsSelectOpen, setIsAssetmodelsSelectOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchAsset = async () => {
-      try {
-        const response = await fetch(
-          `${API_ENDPOINTS.assets.getById}/${assetId}`,
-          {
-            headers: getAuthHeaders(),
-          }
-        );
-        const result = await response.json();
-
-        if (result.status === 200) {
-          setAsset(result.data);
-          setFormData({
-            asset_id: result.data.asset_id,
-            assetbrand_id: result.data.assetbrand_id,
-            assetbrand_name: result.data.assetbrand_name,
-            assetmodel_id: result.data.assetmodel_id,
-            assetmodel_name: result.data.assetmodel_name,
-            assets_in: result.data.assets_in,
-            assets_name: result.data.assets_name,
-            assets_num: result.data.assets_num,
-            assets_num2: result.data.assets_num2,
-            assettypes_id: result.data.assettypes_id,
-            assettypes_name: result.data.assettypes_name,
-            departments_id: result.data.departments_id,
-            img_url: result.data.img_url,
-            note: result.data.note || "ไม่ระบุ",
-            price: result.data.price,
-            purchase_date: result.data.purchase_date?.split(" ")[0],
-            serial_number: result.data.serial_number,
-            status: result.data.status,
-            user_id: result.data.user_id,
-            warranty: result.data.warranty,
-            name: `${result.data.f_name}   ${result.data.l_name}`,
-            departments_name: result.data.departments_name,
-          });
-        } else {
-          setError("ไม่สามารถดึงข้อมูลครุภัณฑ์ได้");
-        }
-      } catch (err) {
-        setError("เกิดข้อผิดพลาดในการเชื่อมต่อ");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (assetId) {
-      fetchAsset();
-    }
-  }, [assetId]); // Update dependency array
-
+  // Update handleSubmit for create instead of update
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSaving(true);
+    setLoading(true);
+
+    // Create newFormData with only required fields
+    const newFormData = {
+      assetbrand_id: Number(formData.assetbrand_id),
+      assetmodel_id: Number(formData.assetmodel_id),
+      assets_in: formData.assets_in,
+      assets_name: formData.assets_name,
+      assets_num: formData.assets_num,
+      assets_num2: formData.assets_num2 || formData.assets_num, // Use assets_num if assets_num2 is empty
+      assetstypes_id: Number(formData.assettypes_id),
+      departments_id: Number(formData.departments_id),
+      img_url: formData.img_url || "",
+      note: formData.note || "ไม่ระบุ",
+      price: Number(formData.price),
+      purchase_date: formData.purchase_date,
+      serial_number: formData.serial_number || "ไม่ระบุ",
+      status: formData.status,
+      user_id: Number(formData.user_id),
+      warranty: formData.warranty
+    };
 
     try {
-      const response = await fetch(`${API_ENDPOINTS.assets.update}`, {
-        method: "PUT",
+      const response = await fetch(`${API_ENDPOINTS.assets.add}`, {
+        method: "POST",
         headers: {
           ...getAuthHeaders(),
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(newFormData), // Send newFormData instead of formData
       });
 
       const result = await response.json();
@@ -103,7 +94,7 @@ export default function EditAssetPage({ params }) {
     } catch (err) {
       setError("เกิดข้อผิดพลาดในการเชื่อมต่อ");
     } finally {
-      setSaving(false);
+      setLoading(false);
     }
   };
 
@@ -172,30 +163,19 @@ export default function EditAssetPage({ params }) {
     setIsAssetmodelsSelectOpen(false);
   };
 
-  if (loading)
-    return (
-      <AdminLayout>
-        <div className="p-4">กำลังโหลด...</div>
-      </AdminLayout>
-    );
-  if (error)
-    return (
-      <AdminLayout>
-        <div className="p-4 text-red-600">{error}</div>
-      </AdminLayout>
-    );
-  if (!asset)
-    return (
-      <AdminLayout>
-        <div className="p-4">ไม่พบข้อมูลครุภัณฑ์</div>
-      </AdminLayout>
-    );
-
   return (
     <AdminLayout>
       <div className="container mx-auto p-4">
         <div className="bg-white rounded-lg shadow p-6">
-          <h1 className="text-2xl font-bold mb-6">แก้ไขข้อมูลครุภัณฑ์</h1>
+          <h1 className="text-2xl font-bold mb-6">เพิ่มข้อมูลครุภัณฑ์</h1>
+          
+          {error && (
+            <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-600 rounded-lg">
+              {error}
+            </div>
+          )}
+
+          {/* Keep existing form structure but update button text */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 gap-6">
               <label className="block text-sm font-medium text-gray-700">
@@ -611,6 +591,7 @@ export default function EditAssetPage({ params }) {
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
+              {/* <div>{ console.log(formData)}</div> */}
             </div>
 
             <div className="flex justify-end space-x-3">
@@ -618,16 +599,16 @@ export default function EditAssetPage({ params }) {
                 type="button"
                 onClick={() => router.push("/admin/assets")}
                 className="px-4 py-2 text-gray-100 bg-red-600 rounded-md hover:bg-red-200 hover:text-red-800"
-                disabled={saving}
+                disabled={loading}
               >
                 ยกเลิก
               </button>
               <button
                 type="submit"
                 className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-200 hover:text-blue-900"
-                disabled={saving}
+                disabled={loading}
               >
-                {saving ? "กำลังบันทึก..." : "บันทึก"}
+                {loading ? "กำลังบันทึก..." : "บันทึก"}
               </button>
             </div>
           </form>

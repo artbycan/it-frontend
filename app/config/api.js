@@ -54,6 +54,7 @@ export const API_ENDPOINTS = {
     delete: `${API_BASE_URL}/assets/delete`,
     getById: `${API_BASE_URL}/assets/getid`,
     getฺByname: `${API_BASE_URL}/assets/getname`,
+    getCount: `${API_BASE_URL}/assets/count`,
   }
   // Add more endpoint categories here as needed
 }

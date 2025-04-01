@@ -1,21 +1,22 @@
-'use server'
-import { API_ENDPOINTS } from '../config/api'
+"use server";
+import { API_ENDPOINTS } from "../config/api";
+import AssetStatus from "@/app/components/assets/AssetStatus";
 
 async function getAssets() {
   try {
-    const response = await fetch(`${API_ENDPOINTS.assets.getRange}/0/0`)
-    const result = await response.json()
+    const response = await fetch(`${API_ENDPOINTS.assets.getRange}/0/0`);
+    const result = await response.json();
     if (result.status === 200) {
-      return result.data
+      return result.data;
     }
-    throw new Error('Failed to fetch data')
+    throw new Error("Failed to fetch data");
   } catch (err) {
-    throw new Error(`Error: ${err.message}`)
+    throw new Error(`Error: ${err.message}`);
   }
 }
 
 export default async function AssetTable() {
-  const assets = await getAssets()
+  const assets = await getAssets();
 
   return (
     <div className="container mx-auto p-4">
@@ -42,12 +43,18 @@ export default async function AssetTable() {
                 <td className="px-4 py-2 border">{asset.assetstypes_name}</td>
                 <td className="px-4 py-2 border">{asset.departments_name}</td>
                 <td className="px-4 py-2 border">{`${asset.f_name} ${asset.l_name}`}</td>
-                <td className="px-4 py-2 border">{asset.status}</td>
+                <td className="px-4 py-2 border">
+                  <AssetStatus 
+                  value={asset.status}
+                  disAbled={true}
+                  Type="show"
+                  ></AssetStatus>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
     </div>
-  )
+  );
 }

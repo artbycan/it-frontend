@@ -3,17 +3,16 @@ import { useState } from "react";
 import Image from "next/image";
 import { API_ENDPOINTS } from '@/app/config/api'
 
-export default function ImageDisplay({ urls }) {
+export default function ImageDisplay({ urls, onDelete,showDelete }) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const imagesPerPage = 5;
 
   if (!urls) return null;
-  let imageUrls = urls.split(",").filter(url => url); // Remove empty strings
+  let imageUrls = urls.split(",").filter(url => url);
 
   if (imageUrls.length === 0) return null;
 
-  // Calculate pagination
   const totalPages = Math.ceil(imageUrls.length / imagesPerPage);
   const indexOfLastImage = currentPage * imagesPerPage;
   const indexOfFirstImage = indexOfLastImage - imagesPerPage;
@@ -21,21 +20,29 @@ export default function ImageDisplay({ urls }) {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const handleDelete = (urlToDelete) => {
+    if (window.confirm('คุณต้องการลบรูปภาพนี้ใช่หรือไม่?')) {
+      const newUrls = imageUrls.filter(url => url !== urlToDelete).join(',');
+      onDelete(newUrls);
+    }
+  };
+
   return (
     <div className="space-y-4">
-      {/* Main large image display */}
+      {/* Modal for full size image */}
       {selectedImage && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="relative bg-white p-4 rounded-lg max-w-4xl max-h-[90vh]">
             <button
               onClick={() => setSelectedImage(null)}
-              className="absolute right-2 top-2 text-gray-500 hover:text-gray-700 z-10"
+              className="absolute right-2 top-2 text-gray-500 hover:text-blue-300 z-10 bg-red-500 text-white px-2 py-1 rounded"
+              title="ปิดรูปภาพ"
             >
-              ✕
+              ปิด
             </button>
             <Image
               src={`${API_ENDPOINTS.files.get}/${selectedImage}`}
-              alt={`Asset${selectedImage}`}
+              alt="Asset"
               width={800}
               height={600}
               className="object-contain max-h-[80vh]"
@@ -49,18 +56,23 @@ export default function ImageDisplay({ urls }) {
         {currentImages.map((url, index) => (
           <div
             key={index}
-            className="relative aspect-square border rounded-lg overflow-hidden cursor-pointer hover:opacity-75"
-            onClick={() => setSelectedImage(url)}
+            className="relative aspect-square border rounded-lg overflow-hidden group"
           >
             <Image
               src={`${API_ENDPOINTS.files.get}/${url}`}
               alt={`img-${indexOfFirstImage + index + 1}`}
               fill
-              className="object-cover"
+              className="object-cover cursor-pointer"
+              onClick={() => setSelectedImage(url)}
             />
-            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-80 text-white text-sm p-0.2 text-center">
-              รูปที่ {indexOfFirstImage + index + 1}
-            </div>
+            <button
+              onClick={() => handleDelete(url)}
+              className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+              title="ลบรูปภาพ"
+              hidden={!showDelete}
+            >
+              ✕
+            </button>
           </div>
         ))}
       </div>
@@ -79,8 +91,8 @@ export default function ImageDisplay({ urls }) {
           >
             ←
           </button>
-          
-          {/* {[...Array(totalPages)].map((_, index) => (
+{/*           
+          {[...Array(totalPages)].map((_, index) => (
             <button
               key={index}
               onClick={() => paginate(index + 1)}
@@ -108,7 +120,6 @@ export default function ImageDisplay({ urls }) {
         </div>
       )}
 
-      {/* Image counter */}
       <div className="text-center text-sm text-gray-500">
         แสดง {indexOfFirstImage + 1} - {Math.min(indexOfLastImage, imageUrls.length)} จาก {imageUrls.length} รูป
       </div>
