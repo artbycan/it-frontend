@@ -40,32 +40,45 @@ export default function SearchSelectDepartments({ value, onChange = () => {}, re
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false)
+        setSearchTerm('') // Clear search when closing
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const selectedDepartments = departments.find(departments => departments.departments_id === value)
+  const selectedDepartment = departments.find(dept => dept.departments_id === value)
   
-  const filteredDepartments = departments.filter(departments =>
-    departments.departments_name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredDepartments = departments.filter(dept =>
+    dept.departments_name.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
+  const handleDepartmentSelect = (department) => {
+    onChange(department.departments_id, {
+      departments_name: department.departments_name
+    })
+    setIsOpen(false)
+    setSearchTerm('')
+  }
+
   return (
-    <div className="relative_departments" ref={dropdownRef}>
-      <div className="relative_departments">
+    <div className="relative" ref={dropdownRef}>
+      <div className="relative">
         <input
           type="text"
           className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 cursor-pointer"
-          value={selectedDepartments ? `${selectedDepartments.departments_name}` : ''}
+          value={selectedDepartment ? selectedDepartment.departments_name : ''}
           onClick={() => setIsOpen(!isOpen)}
           placeholder="เลือกแผนก..."
           readOnly
           required={required}
         />
         <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-          <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+          <svg 
+            className={`h-5 w-5 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} 
+            viewBox="0 0 20 20" 
+            fill="currentColor"
+          >
             <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
           </svg>
         </div>
@@ -89,24 +102,22 @@ export default function SearchSelectDepartments({ value, onChange = () => {}, re
             ) : error ? (
               <li className="px-4 py-2 text-red-500">{error}</li>
             ) : filteredDepartments.length > 0 ? (
-              filteredDepartments.map((departments) => (
+              filteredDepartments.map((dept) => (
                 <li
-                  key={departments.departments_id}
-                  onClick={() => onChange(departments.departments_id,{
-                    departments_name: departments.departments_name
-                  })}
+                  key={dept.departments_id}
+                  onClick={() => handleDepartmentSelect(dept)}
                   className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${
-                    value === departments.departments_id ? 'bg-blue-50' : ''
+                    value === dept.departments_id ? 'bg-blue-50' : ''
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="font-medium">{departments.departments_name}</div>
+                      <div className="font-medium">{dept.departments_name}</div>
                       <div className="text-sm text-gray-500">
-                        รหัสแผนก: {departments.departments_id}
+                        รหัสแผนก: {dept.departments_id}
                       </div>
                       <div className="text-sm text-gray-500">
-                        รายละเอียดแผนก: {departments.department_description}
+                        รายละเอียดแผนก: {dept.department_description}
                       </div>
                     </div>
                   </div>

@@ -22,7 +22,7 @@ export default function UserTable() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [selectedUserForDelete, setSelectedUserForDelete] = useState(null)
 
-  const pageSizeOptions = [5, 10, 20, 50, 100]
+  const pageSizeOptions = [5, 10, 20, 50, 100, 200, 500,]
 
   useEffect(() => {
     fetchUsers()

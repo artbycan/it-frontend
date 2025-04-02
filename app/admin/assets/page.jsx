@@ -15,7 +15,7 @@ const formatAssetId = (id) => {
 
 export default function AssetsPage() {
   const [assets, setAssets] = useState([]);
-  const [pageSize] = useState(5);
+  const [pageSize] = useState(100);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -35,8 +35,8 @@ export default function AssetsPage() {
       const result = await response.json();
       
       if (result.status === 200) {
-        console.log(result.data);
-        return result.data || 0; // Ensure this returns a number
+        setTotalCount(result.data);
+        //console.log(result.data);
       } else {
         console.error('Failed to fetch total count');
       }
@@ -44,17 +44,12 @@ export default function AssetsPage() {
       console.error('Error fetching total count:', error);
     }
   };
-  //totalCount = fetchTotalCount(); // For testing purposes, remove this line in production
-
-  const totalPages = Math.ceil(totalCount / pageSize);
 
   const fetchAssets = async () => {
     try {
       setLoading(true);
-      //totalCount =  7;
       const min = (currentPage - 1) * pageSize;
       const max = min + pageSize;
-      //console.log(`Total Count : ${totalCount}`);
 
       const response = await fetch(`${API_ENDPOINTS.assets.getRange}/${min}/${max}`, {
         headers: getAuthHeaders(),
@@ -62,8 +57,9 @@ export default function AssetsPage() {
 
       const result = await response.json();
       if (result.status === 200) {
+        //console.log(result.total);
+        //await setTotalCount(result.total); // Make sure your API returns total count
         setAssets(result.data || []);
-        setTotalCount(result.total || 0); // Make sure your API returns total count
       } else {
         setError("Failed to fetch assets");
       }
@@ -80,6 +76,7 @@ export default function AssetsPage() {
   };
 
   const handleAssetCreated = () => {
+    fetchTotalCount();
     fetchAssets();
   };
 
@@ -91,9 +88,44 @@ export default function AssetsPage() {
     );
   };
 
+  const handleDelete = async (assetId) => {
+    if (!window.confirm('คุณต้องการลบครุภัณฑ์นี้ใช่หรือไม่?')) {
+      return;
+    }
+  
+    try {
+      const response = await fetch(`${API_ENDPOINTS.assets.update}`, {
+        method: 'PUT',
+        headers: {
+          ...getAuthHeaders(),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          asset_id: assetId,
+          status: '99'
+        })
+      });
+  
+      const result = await response.json();
+  
+      if (result.status === 200) {
+        // Refresh data after successful delete
+        await fetchTotalCount();
+        await fetchAssets();
+      } else {
+        setError(result.message || 'ไม่สามารถลบข้อมูลได้');
+      }
+    } catch (err) {
+      setError('เกิดข้อผิดพลาดในการเชื่อมต่อ');
+    }
+  };
+
   useEffect(() => {
-    //fetchTotalCount();
-    fetchAssets();
+    const fetchData = async () => {
+      await fetchTotalCount();
+      await fetchAssets();
+    };
+    fetchData();
   }, [currentPage]);
 
   const filteredAssets = assets
@@ -110,8 +142,13 @@ export default function AssetsPage() {
     .sort((a, b) => b.asset_id - a.asset_id);
 
   const Pagination = () => {
+    // No data to paginate
+    if (totalCount === 0) return null;
+
     const pageNumbers = [];
     const maxVisiblePages = 5;
+    const totalPages = Math.ceil(totalCount / pageSize);
+    
     let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
     let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
@@ -133,6 +170,7 @@ export default function AssetsPage() {
         </div>
         
         <div className="flex items-center space-x-2">
+          {/* First page */}
           <button
             onClick={() => setCurrentPage(1)}
             disabled={currentPage === 1}
@@ -141,10 +179,12 @@ export default function AssetsPage() {
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
             }`}
+            title="หน้าแรก"
           >
             ««
           </button>
           
+          {/* Previous page */}
           <button
             onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
             disabled={currentPage === 1}
@@ -153,10 +193,12 @@ export default function AssetsPage() {
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
             }`}
+            title="หน้าก่อนหน้า"
           >
             «
           </button>
 
+          {/* Page numbers */}
           {pageNumbers.map(number => (
             <button
               key={number}
@@ -171,6 +213,7 @@ export default function AssetsPage() {
             </button>
           ))}
 
+          {/* Next page */}
           <button
             onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
             disabled={currentPage === totalPages}
@@ -179,10 +222,12 @@ export default function AssetsPage() {
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
             }`}
+            title="หน้าถัดไป"
           >
             »
           </button>
 
+          {/* Last page */}
           <button
             onClick={() => setCurrentPage(totalPages)}
             disabled={currentPage === totalPages}
@@ -191,6 +236,7 @@ export default function AssetsPage() {
                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
             }`}
+            title="หน้าสุดท้าย"
           >
             »»
           </button>
@@ -294,6 +340,13 @@ export default function AssetsPage() {
                             ✏️
                           </button>
                         </Link>
+                        <button
+                          onClick={() => handleDelete(asset.asset_id)}
+                          className="text-red-600 hover:text-red-800"
+                          title="ลบ"
+                        >
+                          🗑️
+                        </button>
                       </div>
                     </td>
                   </tr>

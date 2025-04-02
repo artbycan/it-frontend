@@ -2,12 +2,26 @@
 import { useState, useEffect, useRef } from 'react'
 
 const GENDER_OPTIONS = [
-  { id: 'male', name: 'ชาย' },
-  { id: 'female', name: 'หญิง' },
-  { id: 'none_gender', name: 'ไม่ระบุเพศ' }
+  { id: '1', name: 'ชาย', description: 'เพศชาย' },
+  { id: '2', name: 'หญิง', description: 'เพศหญิง' },
+  { id: '3', name: 'ไม่ระบุเพศ', description: 'ไม่ระบุเพศ' }
 ]
 
-export default function SearchSelectGender({ value, onChange, required = false }) {
+export const getGenderLabel = (genderId) => {
+  const gender = GENDER_OPTIONS.find(g => g.id === genderId)
+  return gender ? gender.name : 'ไม่ระบุเพศ'
+}
+
+export const getGenderColor = (genderId) => {
+  const styleMap = {
+    '1': 'bg-blue-100 text-blue-800',
+    '2': 'bg-pink-100 text-pink-800',
+    '3': 'bg-gray-100 text-gray-800'
+  }
+  return styleMap[genderId] || 'bg-gray-100 text-gray-800'
+}
+
+export default function SearchSelectGender({ value, onChange, required = false, type = 'select' }) {
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const dropdownRef = useRef(null)
@@ -28,12 +42,12 @@ export default function SearchSelectGender({ value, onChange, required = false }
     gender.name.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  const getGenderColor = (genderId) => {
-    switch(genderId) {
-      case 'male': return 'bg-blue-100 text-blue-800'
-      case 'female': return 'bg-pink-100 text-pink-800'
-      default: return 'bg-gray-100 text-gray-800'
-    }
+  if (type === 'show') {
+    return (
+      <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getGenderColor(value)}`}>
+        {getGenderLabel(value)}
+      </div>
+    )
   }
 
   return (

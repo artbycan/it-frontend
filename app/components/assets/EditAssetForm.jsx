@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { API_ENDPOINTS } from '@/app/config/api'
 import { getAuthHeaders } from '@/app/utils/auth'
 import SearchSelectUser from '@/app/components/users/SearchSelectUser'
-import SearchSelectDepartments from '@/app/components/SearchSelectDepartments'
+//import SearchSelectDepartments from '@/app/components/SearchSelectDepartments'
 
 export default function EditAssetForm({ asset, onClose, onSuccess }) {
   const [formData, setFormData] = useState({

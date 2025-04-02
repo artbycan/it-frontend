@@ -12,9 +12,16 @@ export default function DeleteUserModal({ user, onClose, onSuccess }) {
     setError(null)
 
     try {
-      const response = await fetch(`${API_ENDPOINTS.users.delete}/${user.user_id}`, {
-        method: 'DELETE',
-        headers: getAuthHeaders()
+      const response = await fetch(`${API_ENDPOINTS.users.update}`, {
+        method: 'PUT',
+        headers: {
+          ...getAuthHeaders(),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          user_id: user.user_id,
+          status: '99' // Set status to deleted
+        })
       })
 
       const result = await response.json()

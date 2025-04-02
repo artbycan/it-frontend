@@ -1,8 +1,13 @@
-'use client'
-import { useState } from 'react'
+"use client";
+import ImageDisplay from "@/app/components/ImageDisplay";
+import AssetStatus from "@/app/components/assets/AssetStatus";
+
+const formatAssetId = (id) => {
+  return `A${String(id).padStart(10, "0")}`;
+};
 
 export default function AssetsDetailsModal({ asset, onClose }) {
-  if (!asset) return null
+  if (!asset) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -17,17 +22,34 @@ export default function AssetsDetailsModal({ asset, onClose }) {
           </button>
         </div>
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="mt-6 flex justify-end">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 bg-red-800 text-gray-100 rounded hover:bg-red-300"
+            >
+              ปิด
+            </button>
+          </div>
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <p className="text-sm font-medium text-gray-500">รูปภาพ</p>
+              {/* <p className="mt-1">{asset.img_url}</p> */}
+              <ImageDisplay urls={asset.img_url} showDelete={false} />
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-4">
             <div>
               <p className="text-sm font-medium text-gray-500">รหัสครุภัณฑ์</p>
-              <p className="mt-1">{asset.asset_id}</p>
+              <p className="mt-1">{formatAssetId(asset.asset_id)}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-gray-500">ชื่อครุภัณฑ์</p>
               <p className="mt-1">{asset.assets_name}</p>
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-500">หมายเลขครุภัณฑ์</p>
+              <p className="text-sm font-medium text-gray-500">
+                หมายเลขครุภัณฑ์
+              </p>
               <p className="mt-1">{asset.assets_num}</p>
             </div>
             <div>
@@ -36,7 +58,7 @@ export default function AssetsDetailsModal({ asset, onClose }) {
             </div>
             <div>
               <p className="text-sm font-medium text-gray-500">ราคา</p>
-              <p className="mt-1">{asset.price.toLocaleString('th-TH')} บาท</p>
+              <p className="mt-1">{asset.price.toLocaleString("th-TH")} บาท</p>
             </div>
             <div>
               <p className="text-sm font-medium text-gray-500">แผนก</p>
@@ -55,16 +77,22 @@ export default function AssetsDetailsModal({ asset, onClose }) {
               <p className="mt-1">{asset.serial_number}</p>
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-500">ระยะเวลารับประกัน</p>
+              <p className="text-sm font-medium text-gray-500">
+                ระยะเวลารับประกัน
+              </p>
               <p className="mt-1">{asset.warranty}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-gray-500">วันที่ซื้อ</p>
-              <p className="mt-1">{new Date(asset.purchase_date).toLocaleDateString('th-TH')}</p>
+              <p className="mt-1">
+                {new Date(asset.purchase_date).toLocaleDateString("th-TH")}
+              </p>
             </div>
             <div>
               <p className="text-sm font-medium text-gray-500">สถานะ</p>
-              <p className="mt-1">{asset.status}</p>
+              <p className="mt-1">
+                <AssetStatus value={asset.status} disAbled={true} Type="show" />
+              </p>
             </div>
             <div className="col-span-2">
               <p className="text-sm font-medium text-gray-500">หมายเหตุ</p>
@@ -72,15 +100,7 @@ export default function AssetsDetailsModal({ asset, onClose }) {
             </div>
           </div>
         </div>
-        <div className="mt-6 flex justify-end">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
-          >
-            ปิด
-          </button>
-        </div>
       </div>
     </div>
-  )
+  );
 }
