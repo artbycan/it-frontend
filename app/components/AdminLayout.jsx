@@ -16,11 +16,19 @@ const AdminLayout = ({ children }) => {
     }
   }, [])
 
-  const handleLogout = () => {
-    // Clear all localStorage items
-    localStorage.clear()
-    logout()
-    router.push('/login')
+  const handleLogout = async () => {
+    try {
+      const success = await logout()
+      if (success) {
+        router.push('/login?message=ออกจากระบบสำเร็จ')
+      } else {
+        console.error('Logout failed')
+        router.push('/login?message=เกิดข้อผิดพลาดในการออกจากระบบ')
+      }
+    } catch (error) {
+      console.error('Logout error:', error)
+      router.push('/login?message=เกิดข้อผิดพลาดในการออกจากระบบ')
+    }
   }
 
   const menuItems = [

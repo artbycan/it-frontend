@@ -38,34 +38,40 @@ export default function LoginPage() {
       const result = await response.json()
 
       if (result.status === 200) {
-        // Store the JWT token in both localStorage and cookies
-        const token = result.data.jwt_token.access_token
-        localStorage.setItem('jwt_token', token)
-        localStorage.setItem('user_id', result.data.user_id)
-        localStorage.setItem('username', result.data.username)
-        localStorage.setItem('user_role', result.data.role)
-        localStorage.setItem('user_fullname', result.data.f_name+' '+result.data.l_name)
-        localStorage.setItem('user_departments_id', result.data.departments_id)
-        localStorage.setItem('user_email', result.data.email)
-        localStorage.setItem('user_phone_number', result.data.phone_number)
-        localStorage.setItem('user_grnder', result.data.gender)
-        localStorage.setItem('user_line_id', result.data.line_id)
-        localStorage.setItem('user_date_of_birth', result.data.date_of_birth)
-        localStorage.setItem('user_status', result.data.status)
-        localStorage.setItem('user_created_at', result.data.created_at)
-        localStorage.setItem('user_updated_at', result.data.updated_at)
-        localStorage.setItem('user_line_token', result.data.line_token)
-        localStorage.setItem('user_address', result.data.address)
-        // Set cookie with token
-        document.cookie = `token=${token}; path=/; max-age=86400` // Expires in 24 hours
+        // Create session
+        const sessionResponse = await fetch('/api/auth/session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            token: result.data.jwt_token.access_token,
+            user: {
+              id: result.data.user_id,
+              username: result.data.username,
+              role: result.data.role,
+              status: result.data.status,
+              fullName: `${result.data.f_name} ${result.data.l_name}`
+            }
+          })
+        })
 
-        // Redirect to admin dashboard
-        router.push('/admin')
+        if (sessionResponse.ok) {
+          // Store minimal data in localStorage for UI purposes only
+          localStorage.setItem('username', result.data.username)
+          localStorage.setItem('user_fullname', `${result.data.f_name} ${result.data.l_name}`)
+
+          // Redirect to admin dashboard
+          router.push('/admin')
+        } else {
+          setError('เกิดข้อผิดพลาดในการสร้างเซสชัน')
+        }
       } else {
         setError(result.message || 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ')
       }
     } catch (error) {
       setError('เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์')
+      console.error('Login error:', error)
     } finally {
       setLoading(false)
     }

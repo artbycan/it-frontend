@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
-    "next": "15.2.2",
+    "iron-session": "^8.0.4",
+    "next": "^15.2.4",
+    "next-session": "^4.0.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
