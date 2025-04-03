@@ -1,12 +1,27 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { logout } from '../utils/auth'
 
 const AdminLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [username, setUsername] = useState('Admin User')
   const router = useRouter()
+
+  useEffect(() => {
+    const storedUsername = localStorage.getItem('username')
+    if (storedUsername) {
+      setUsername(storedUsername)
+    }
+  }, [])
+
+  const handleLogout = () => {
+    // Clear all localStorage items
+    localStorage.clear()
+    logout()
+    router.push('/login')
+  }
 
   const menuItems = [
     { name: 'หน้าแรก', path: '/', icon: '🏠' },
@@ -19,11 +34,6 @@ const AdminLayout = ({ children }) => {
     { name: 'ยี่ห้อครุภัณฑ์', path: '/admin/assetbrands', icon: '🏷️' },
     { name: 'รุ่นครุภัณฑ์', path: '/admin/assetmodels', icon: '🔖' },
   ]
-
-  const handleLogout = () => {
-    logout()
-    router.push('/login')
-  }
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -46,7 +56,7 @@ const AdminLayout = ({ children }) => {
           <div className="border-t border-gray-700 my-4"></div>
           <button
             onClick={handleLogout}
-            className="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
+            className="flex items-center w-full px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
           >
             <span className="mr-3">🚪</span>
             ออกจากระบบ
@@ -66,7 +76,7 @@ const AdminLayout = ({ children }) => {
               <span className="text-2xl">☰</span>
             </button>
             <div className="flex items-center space-x-4">
-              <span className="text-gray-700">Admin User</span>
+              <span className="text-gray-700">ยินดีต้อนรับ : {username}</span>
             </div>
           </div>
         </header>

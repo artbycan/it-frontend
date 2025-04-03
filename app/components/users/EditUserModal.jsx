@@ -161,7 +161,7 @@ export default function EditUserModal({ user, onClose, onSuccess }) {
 
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                <p className="text-red-500">{formData.departments_id}</p>
+                {/* <p className="text-red-500">{formData.departments_id}</p> */}
                 แผนก departments_id: {formData.departments_id}
               </label>
               <SearchSelectDepartments
@@ -258,7 +258,10 @@ export default function EditUserModal({ user, onClose, onSuccess }) {
               />
             </div>
 
-            <div>
+            {/* Add more 2colum form fields as needed */}
+          </div>
+          <div className="grid grid-cols-1 gap-4">
+          <div>
               <label className="block text-sm font-medium text-gray-700">
                 ที่อยู่
               </label>
@@ -271,32 +274,13 @@ export default function EditUserModal({ user, onClose, onSuccess }) {
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
-
-            <p>-</p>
-            <p className="text-blue-600">userID : {formData.user_id}</p>
-            <p className="text-blue-600">
-              ชื่อ-นามสกุล : {formData.f_name} {formData.l_name}
-            </p>
-            <p className="text-blue-600">อีเมล : {formData.email}</p>
-            <p className="text-blue-600">
-              รหัสแผนก : {formData.departments_id}
-            </p>
-            <p className="text-blue-600">เพศ : {formData.gender}</p>
-            <p className="text-blue-600">วันเกิด : {formData.date_of_birth}</p>
-            <p className="text-blue-600">เบอร์โทร : {formData.phone_number}</p>
-            <p className="text-blue-600">ที่อยู่ : {formData.address}</p>
-            <p className="text-blue-600">สถานะ : {formData.status}</p>
-            <p className="text-blue-600">Line ID : {formData.line_id}</p>
-            <p className="text-blue-600">Line Token : {formData.line_token}</p>
-            <p className="text-blue-600">บทบาท : {formData.role}</p>
-            {/* Add more form fields as needed */}
-          </div>
+            </div>
 
           <div className="mt-6 flex justify-end space-x-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+              className="px-4 py-2 bg-red-800 text-gray-100 rounded hover:bg-red-300"
               disabled={loading}
             >
               ยกเลิก

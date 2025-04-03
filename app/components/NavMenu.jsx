@@ -1,7 +1,17 @@
-//'use client'
-import Link from 'next/link'
+'use client'
+import { useState, useEffect } from "react";
+import Link from "next/link";
 
 const NavMenu = () => {
+  const [username, setUsername] = useState("Guest");
+
+  // useEffect(() => {
+  //   const storedUsername = localStorage.getItem("username");
+  //   if (storedUsername) {
+  //     setUsername(storedUsername);
+  //   }
+  // }, []);
+
   return (
     <nav className="bg-white shadow-lg">
       <div className="max-w-6xl mx-auto px-4">
@@ -15,33 +25,54 @@ const NavMenu = () => {
             </div>
             {/* Primary Nav */}
             <div className="hidden md:flex items-center space-x-4 ml-8">
-              <Link href="/" className="py-4 px-2 text-gray-500 hover:text-blue-500 transition duration-300">
+              <Link
+                href="/"
+                className="py-4 px-2 text-gray-500 hover:text-blue-500 transition duration-300"
+              >
                 Home
               </Link>
-              <Link href="/assets" className="py-4 px-2 text-gray-500 hover:text-blue-500 transition duration-300">
+              <Link
+                href="/assets"
+                className="py-4 px-2 text-gray-500 hover:text-blue-500 transition duration-300"
+              >
                 ครุภัณฑ์
               </Link>
-              <Link href="/about" className="py-4 px-2 text-gray-500 hover:text-blue-500 transition duration-300">
+              <Link
+                href="/about"
+                className="py-4 px-2 text-gray-500 hover:text-blue-500 transition duration-300"
+              >
                 About
               </Link>
-              <Link href="/admin" className="py-4 px-2 text-gray-500 hover:text-blue-500 transition duration-300">
+              <Link
+                href="/admin"
+                className="py-4 px-2 text-gray-500 hover:text-blue-500 transition duration-300"
+              >
                 Admin
               </Link>
             </div>
           </div>
           {/* Secondary Nav */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link href="/login" className="py-2 px-4 text-gray-500 hover:text-blue-500 transition duration-300">
+            {/* <p className="py-4 px-2 text-gray-500 font-medium">
+              {username}
+            </p> */}
+            <Link
+              href="/login"
+              className="py-2 px-4 text-gray-500 hover:text-blue-500 transition duration-300"
+            >
               Login
             </Link>
-            <Link href="/signup" className="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300">
+            <Link
+              href="/signup"
+              className="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300"
+            >
               Sign Up
             </Link>
           </div>
         </div>
       </div>
     </nav>
-  )
-}
+  );
+};
 
-export default NavMenu
+export default NavMenu;
