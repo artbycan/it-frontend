@@ -1,16 +1,42 @@
 'use client'
-import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useState, useEffect } from "react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { logout } from "../utils/auth"
 
 const NavMenu = () => {
-  const [username, setUsername] = useState("Guest");
+  const router = useRouter()
+  const [username, setUsername] = useState("Guest")
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
-  // useEffect(() => {
-  //   const storedUsername = localStorage.getItem("username");
-  //   if (storedUsername) {
-  //     setUsername(storedUsername);
-  //   }
-  // }, []);
+  useEffect(() => {
+    const storedUsername = localStorage.getItem("username")
+    if (storedUsername) {
+      setUsername(storedUsername)
+      setIsLoggedIn(true)
+    }
+  }, [])
+
+  const handleLoginClick = async (e) => {
+    e.preventDefault()
+    if (isLoggedIn) {
+      try {
+        const success = await logout()
+        if (success) {
+          setUsername("Guest")
+          setIsLoggedIn(false)
+          router.push('/login?message=ออกจากระบบสำเร็จ')
+        } else {
+          router.push('/login?message=เกิดข้อผิดพลาดในการออกจากระบบ')
+        }
+      } catch (error) {
+        console.error('Logout error:', error)
+        router.push('/login?message=เกิดข้อผิดพลาดในการออกจากระบบ')
+      }
+    } else {
+      router.push('/login')
+    }
+  }
 
   return (
     <nav className="bg-white shadow-lg">
@@ -53,26 +79,25 @@ const NavMenu = () => {
           </div>
           {/* Secondary Nav */}
           <div className="hidden md:flex items-center space-x-4">
-            {/* <p className="py-4 px-2 text-gray-500 font-medium">
-              {username}
-            </p> */}
-            <Link
-              href="/login"
-              className="py-2 px-4 text-gray-500 hover:text-blue-500 transition duration-300"
+            <button
+              onClick={handleLoginClick}
+              className="py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600 transition duration-300"
             >
-              Login
-            </Link>
-            <Link
-              href="/signup"
-              className="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300"
-            >
-              Sign Up
-            </Link>
+              {isLoggedIn ? 'Logout' : 'Login'}
+            </button>
+            {!isLoggedIn && (
+              <Link
+                href="/signup"
+                className="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300"
+              >
+                Sign Up
+              </Link>
+            )}
           </div>
         </div>
       </div>
     </nav>
-  );
-};
+  )
+}
 
-export default NavMenu;
+export default NavMenu

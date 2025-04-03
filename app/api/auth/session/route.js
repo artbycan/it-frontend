@@ -5,15 +5,22 @@ import { cookies } from 'next/headers'
 
 export async function POST(req) {
   try {
-    const cookieStore = cookies()
-    const session = await getIronSession(cookieStore, sessionOptions)
+    const cookieStore = await cookies()
+    const response = new NextResponse()
+    const session = await getIronSession(req, response, sessionOptions)
     const { token, user } = await req.json()
     
     session.token = token
     session.user = user
     await session.save()
 
-    return NextResponse.json({ status: 200, message: 'Session created' })
+    // Copy headers from response to a new response with JSON
+    const finalResponse = NextResponse.json(
+      { status: 200, message: 'Session created' },
+      { headers: response.headers }
+    )
+
+    return finalResponse
   } catch (error) {
     console.error('Session error:', error)
     return NextResponse.json(
