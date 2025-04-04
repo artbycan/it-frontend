@@ -58,6 +58,12 @@ const NavMenu = () => {
                 Home
               </Link>
               <Link
+                href="/repair"
+                className="py-4 px-2 text-gray-500 hover:text-blue-500 transition duration-300"
+              >
+                แจ้งซ่อม
+              </Link>
+              <Link
                 href="/assets"
                 className="py-4 px-2 text-gray-500 hover:text-blue-500 transition duration-300"
               >

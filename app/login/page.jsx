@@ -60,6 +60,7 @@ export default function LoginPage() {
           // Store minimal data in localStorage for UI purposes only
           localStorage.setItem('username', result.data.username)
           localStorage.setItem('user_fullname', `${result.data.f_name} ${result.data.l_name}`)
+          localStorage.setItem('user_id', result.data.user_id)
 
           // Redirect to admin dashboard
           router.push('/admin')

@@ -55,6 +55,14 @@ export const API_ENDPOINTS = {
     getById: `${API_BASE_URL}/assets/getid`,
     getฺByname: `${API_BASE_URL}/assets/getname`,
     getCount: `${API_BASE_URL}/assets/count`,
-  }
+  },
+  maintenance: {
+    getByUser: `${API_BASE_URL}/maintenance/getbyuser`,
+    getById: `${API_BASE_URL}/maintenance/getid`,
+    getAll: `${API_BASE_URL}/maintenance/get`,
+    create: `${API_BASE_URL}/maintenance/add`,
+    update: `${API_BASE_URL}/maintenance/update`,
+    delete: `${API_BASE_URL}/maintenance/delete`,
+  },
   // Add more endpoint categories here as needed
 }
