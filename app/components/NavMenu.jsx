@@ -100,6 +100,7 @@ const NavMenu = () => {
               </Link>
             )}
           </div>
+          
         </div>
       </div>
     </nav>
