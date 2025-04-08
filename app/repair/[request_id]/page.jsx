@@ -7,6 +7,7 @@ import Image from "next/image";
 import RepairStatus from "@/app/components/repair/RepairStatus";
 import RepairPriority from "@/app/components/repair/RepairPriority";
 import ImageDisplay from "@/app/components/ImageDisplay";
+import UserLayout from "@/app/components/UserLayout";
 
 export default function RepairDetail() {
   const params = useParams();
@@ -49,95 +50,106 @@ export default function RepairDetail() {
     return <div className="text-center p-8">ไม่พบข้อมูลการแจ้งซ่อม</div>;
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h1 className="text-2xl font-bold mb-6">
-          รายละเอียดการแจ้งซ่อม #{repair.request_id}
-        </h1>
+    <UserLayout title="รายละเอียดการแจ้งซ่อม" backLink="/repair">
+      <div className="container mx-auto p-6 relative" >
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Asset Information */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold">ข้อมูลครุภัณฑ์</h2>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-gray-600">ชื่อครุภัณฑ์</p>
-                <p className="font-medium">{repair.assets_name}</p>
-              </div>
-              <div>
-                <p className="text-gray-600">หมายเลขครุภัณฑ์</p>
-                <p className="font-medium">{repair.assets_num}</p>
-              </div>
-              <div>
-                <p className="text-gray-600">Serial Number</p>
-                <p className="font-medium">{repair.serial_number}</p>
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          {/* Close Button */}
+          <button
+            onClick={() => window.history.back()}
+            className="absolute top-12 right-14 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          >
+            ปิด
+          </button>
+
+          <h1 className="text-2xl font-bold mb-6">
+            รายละเอียดการแจ้งซ่อม #{repair.request_id}
+          </h1>
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Asset Information */}
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold">ข้อมูลครุภัณฑ์</h2>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-gray-600">ชื่อครุภัณฑ์</p>
+                  <p className="font-medium">{repair.assets_name}</p>
+                </div>
+                <div>
+                  <p className="text-gray-600">หมายเลขครุภัณฑ์</p>
+                  <p className="font-medium">{repair.assets_num}</p>
+                </div>
+                <div>
+                  <p className="text-gray-600">Serial Number</p>
+                  <p className="font-medium">{repair.serial_number}</p>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Repair Information */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold">ข้อมูลการแจ้งซ่อม</h2>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-gray-600">วันที่แจ้งซ่อม</p>
-                <p className="font-medium">
-                  {new Date(repair.request_date).toLocaleDateString("th-TH")}
-                </p>
-              </div>
-              <div>
-                <p className="text-gray-600">สถานะ</p>
-                <RepairStatus value={repair.request_status} />
-              </div>
-              <div>
-                <p className="text-gray-600">ความเร่งด่วน</p>
-                <RepairPriority value={repair.priority} />
+            {/* Repair Information */}
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold">ข้อมูลการแจ้งซ่อม</h2>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-gray-600">วันที่แจ้งซ่อม</p>
+                  <p className="font-medium">
+                    {new Date(repair.request_date).toLocaleDateString("th-TH")}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-gray-600">สถานะ</p>
+                  <RepairStatus value={repair.request_status} />
+                </div>
+                <div>
+                  <p className="text-gray-600">ความเร่งด่วน</p>
+                  <RepairPriority value={repair.priority} />
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Problem Details */}
-          <div className="md:col-span-2 space-y-4">
-            <h2 className="text-xl font-semibold">รายละเอียดปัญหา</h2>
-            <p className="bg-gray-50 p-4 rounded">{repair.problem_detail}</p>
-          </div>
-
-          {/* Technician Information */}
-          <div className="md:col-span-2 space-y-4">
-            <h2 className="text-xl font-semibold">ข้อมูลช่างซ่อม</h2>
-            <div className="grid md:grid-cols-3 gap-4">
-              <div>
-                <p className="text-gray-600">ชื่อ-นามสกุล</p>
-                <p className="font-medium">
-                  {repair.technician_fname} {repair.technician_lname}
-                </p>
-              </div>
-              <div>
-                <p className="text-gray-600">ชื่อผู้ใช้</p>
-                <p className="font-medium">{repair.technician_username}</p>
-              </div>
-              <div>
-                <p className="text-gray-600">เบอร์โทรศัพท์</p>
-                <p className="font-medium">{repair.technician_phone}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Images */}
-          {repair.img_url && (
+            {/* Problem Details */}
             <div className="md:col-span-2 space-y-4">
-              <h2 className="text-xl font-semibold">รูปภาพ</h2>
-              <div>
-                <ImageDisplay
-                  urls={repair.img_url}
-                  // เปิดปิดส่วนแสดงภาพลบภาพ {true} เปิด ด
-                  showDelete={false}
-                />
+              <h2 className="text-xl font-semibold">รายละเอียดปัญหา</h2>
+              <p className="bg-gray-50 p-4 rounded">{repair.problem_detail}</p>
+            </div>
+
+            {/* Technician Information */}
+            <div className="md:col-span-2 space-y-4">
+              <h2 className="text-xl font-semibold">ข้อมูลช่างซ่อม</h2>
+              <div className="grid md:grid-cols-3 gap-4">
+                <div>
+                  <p className="text-gray-600">ชื่อ-นามสกุล</p>
+                  <p className="font-medium">
+                    {repair.technician_fname} {repair.technician_lname}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-gray-600">ชื่อผู้ใช้</p>
+                  <p className="font-medium">{repair.technician_username}</p>
+                </div>
+                <div>
+                  <p className="text-gray-600">เบอร์โทรศัพท์</p>
+                  <p className="font-medium">{repair.technician_phone}</p>
+                </div>
               </div>
             </div>
-          )}
+
+            {/* Images */}
+            {repair.img_url && (
+              <div className="md:col-span-2 space-y-4">
+                <h2 className="text-xl font-semibold">รูปภาพ</h2>
+                <div>
+                  <ImageDisplay
+                    urls={repair.img_url}
+                    // เปิดปิดส่วนแสดงภาพลบภาพ {true} เปิด ด
+                    showDelete={false}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
+
       </div>
-    </div>
+    </UserLayout>
   );
 }
