@@ -55,6 +55,7 @@ export const API_ENDPOINTS = {
     getById: `${API_BASE_URL}/assets/getid`,
     getฺByname: `${API_BASE_URL}/assets/getname`,
     getCount: `${API_BASE_URL}/assets/count`,
+    getByStatus: `${API_BASE_URL}/assets/getstatus`,
   },
   maintenance: {
     getByUser: `${API_BASE_URL}/maintenance/getbyuser`,
@@ -63,6 +64,9 @@ export const API_ENDPOINTS = {
     create: `${API_BASE_URL}/maintenance/add`,
     update: `${API_BASE_URL}/maintenance/update`,
     delete: `${API_BASE_URL}/maintenance/delete`,
+  },
+  task: {
+    assignTaskRandom: `${API_BASE_URL}/task/assign_task_random`,
   },
   // Add more endpoint categories here as needed
 }

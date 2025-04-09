@@ -3,11 +3,12 @@ import { useState, useEffect, useRef } from 'react'
 
 export const USER_ROLES = [
   { id: '5', name: 'Super Admin', description: 'ผู้ดูแลระบบระดับสูงสุด' },
-  { id: '1', name: 'Admin', description: 'ผู้ดูแลระบบ' },
+  { id: '6', name: 'Admin(ไม่รับงานซ่อม)', description: 'ผู้ดูแลระบบ' },
   { id: '2', name: 'Manager', description: 'ผู้จัดการระบบ' },
   { id: '3', name: 'User', description: 'ผู้ใช้งานทั่วไป' },
   { id: '4', name: 'Guest', description: 'ผู้เยี่ยมชมระบบ' },
-  { id: '0', name: 'New User', description: 'ผู้ใช้งานใหม่' }
+  { id: '0', name: 'New User', description: 'ผู้ใช้งานใหม่' },
+  { id: '1', name: 'Technician', description: 'ช่างซ่อมบำรุง' },
 ]
 
 export const getRoleLabel = (roleId) => {
@@ -22,7 +23,8 @@ export const getRoleColor = (roleId) => {
     '2': 'bg-green-100 text-green-800',
     '3': 'bg-blue-100 text-blue-800',
     '4': 'bg-yellow-100 text-yellow-800',
-    '0': 'bg-indigo-100 text-indigo-800'
+    '0': 'bg-indigo-100 text-indigo-800',
+    '6': 'bg-orange-100 text-orange-800',
   }
   return styleMap[roleId] || 'bg-gray-100 text-gray-800'
 }

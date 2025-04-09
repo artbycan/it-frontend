@@ -11,7 +11,8 @@ export async function middleware(request) {
     }
 
     const { role, status } = session.user
-    const allowedRoles = ['5', '1']
+    const allowedRoles = ['5', '1','6']// Super Admin, Technician, Admin
+    // Check if the user has the required role and status
 
     if (status !== '0' || !allowedRoles.includes(role)) {
       return NextResponse.redirect(new URL('/unauthorized', request.url))

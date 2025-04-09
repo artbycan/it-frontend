@@ -50,7 +50,7 @@ export default function EditAssetPage({ params }) {
             assets_name: result.data.assets_name,
             assets_num: result.data.assets_num,
             assets_num2: result.data.assets_num2,
-            assettypes_id: result.data.assettypes_id,
+            assetstypes_id: result.data.assettypes_id,
             assettypes_name: result.data.assettypes_name,
             departments_id: result.data.departments_id,
             img_url: result.data.img_url,
@@ -140,7 +140,7 @@ export default function EditAssetPage({ params }) {
   const handleAssettypesSelect = (assettypesId, assettypesData) => {
     setFormData((prev) => ({
       ...prev,
-      assettypes_id: assettypesId,
+      assetstypes_id: assettypesId,
       assettypes_name: assettypesData.assettypes_name,
     }));
     setIsAssettypesSelectOpen(false);
@@ -265,7 +265,7 @@ export default function EditAssetPage({ params }) {
                 </label>
                 <div className="flex items-center justify-between p-2 border rounded-md">
                   <div className="flex items-center space-x-2">
-                    <span>รหัส: {formData.assettypes_id}</span>
+                    <span>รหัส: {formData.assetstypes_id}</span>
                     <span>|</span>
                     <span>ชื่อ: {formData.assettypes_name}</span>
                   </div>
@@ -294,7 +294,7 @@ export default function EditAssetPage({ params }) {
                         </button>
                       </div>
                       <SearchSelectAssettypes
-                        value={formData.assettypes_id}
+                        value={formData.assetstypes_id}
                         onChange={(assettypesId, assettypesData) =>
                           handleAssettypesSelect(assettypesId, assettypesData)
                         }
@@ -480,8 +480,8 @@ export default function EditAssetPage({ params }) {
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
-
-            </div>{/* จบส่วนคุรุภัณฑ์ */}
+            </div>
+            {/* จบส่วนคุรุภัณฑ์ */}
 
             <div className="inline-flex items-center justify-center w-full">
               <hr className="w-64 h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"></hr>
@@ -493,7 +493,7 @@ export default function EditAssetPage({ params }) {
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   วันที่รับเข้าแผนก/กลุ่มงาน
-                  </label>
+                </label>
                 <input
                   type="date"
                   value={formData.assets_in}
@@ -611,6 +611,7 @@ export default function EditAssetPage({ params }) {
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
               </div>
+              {/* <div>{formData.note}</div> */}
             </div>
 
             <div className="flex justify-end space-x-3">
@@ -629,6 +630,12 @@ export default function EditAssetPage({ params }) {
               >
                 {saving ? "กำลังบันทึก..." : "บันทึก"}
               </button>
+              {/* <button
+                onClick={console.log(formData)}
+                className="px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-200 hover:text-green-900"
+              >
+                logfromData
+              </button> */}
             </div>
           </form>
         </div>
