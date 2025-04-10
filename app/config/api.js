@@ -64,6 +64,7 @@ export const API_ENDPOINTS = {
     create: `${API_BASE_URL}/maintenance/add`,
     update: `${API_BASE_URL}/maintenance/update`,
     delete: `${API_BASE_URL}/maintenance/delete`,
+    getByTechnician: `${API_BASE_URL}/maintenance/getbytechnician`,
   },
   task: {
     assignTaskRandom: `${API_BASE_URL}/task/assign_task_random`,
