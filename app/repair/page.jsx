@@ -15,6 +15,40 @@ export default function RepairDashboard() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
+  const handleCancel = async (request_id) => {
+    if (!window.confirm('ต้องการยกเลิกการแจ้งซ่อมนี้หรือไม่?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(API_ENDPOINTS.maintenance.update, {
+        method: 'PUT',
+        headers: {
+          ...getAuthHeaders(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          request_id: request_id,
+          request_status: "5"
+        })
+      });
+
+      const result = await response.json();
+      if (result.status === 200) {
+        // Update local state to reflect the change
+        setRepairs(repairs.map(repair => 
+          repair.request_id === request_id 
+            ? { ...repair, request_status: "5" }
+            : repair
+        ));
+      } else {
+        alert('ไม่สามารถยกเลิกการแจ้งซ่อมได้');
+      }
+    } catch (error) {
+      alert('เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์');
+    }
+  };
+
   // Filter repairs based on search term
   const filteredRepairs = repairs.filter((repair) => {
     if (!repair) return false;
@@ -175,13 +209,21 @@ export default function RepairDashboard() {
                             ℹ️
                           </button>
                         </Link>
+                        <Link
+                          href={`/repair/edit/${repair.request_id}`}
+                          className="text-indigo-600 hover:text-indigo-900">
                         <button
                           className="text-yellow-600 hover:text-yellow-800"
                           title="แก้ไข"
                         >
                           ✏️
                         </button>
-                        <button title="ลบ">🗑️</button>
+                        </Link>
+                        <button 
+                          onClick={() => handleCancel(repair.request_id)} 
+                          title="ยกเลิก">
+                          🗑️
+                        </button>
                       </td>
                     </tr>
                   ))}

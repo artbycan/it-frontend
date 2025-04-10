@@ -34,6 +34,7 @@ const AdminLayout = ({ children }) => {
   const menuItems = [
     { name: 'หน้าแรก', path: '/', icon: '🏠' },
     { name: 'แดชบอร์ด', path: '/admin/dashboard', icon: '📊' },
+    { name: 'การแจ้งซ่อม', path: '/admin/repair', icon: '🔧' },
     { name: 'ครุภัณฑ์', path: '/admin/assets', icon: '💻' },
     { name: 'ผู้ใช้งาน', path: '/admin/users', icon: '👥' },
     { name: 'ไฟล์อัพโหลด', path: '/admin/files', icon: '📤' },

@@ -23,7 +23,7 @@ export default function AddRepair() {
     img_url: "noimg.jpg",
     priority: "1",
     problem_detail: "",
-    request_date: "",
+    request_date: new Date().toISOString().split("T")[0],
     request_status: "0",
     technician_id: "",
     user_id: "", // Initialize without localStorage
@@ -33,6 +33,7 @@ export default function AddRepair() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [showTechnicianAssignment, setShowTechnicianAssignment] = useState(false);
 
   // Add useEffect to set user_id after mount
   useEffect(() => {
@@ -61,7 +62,7 @@ export default function AddRepair() {
     setSuccess(null);
 
     try {
-      const response = await fetch(API_ENDPOINTS.maintenance.add, {
+      const response = await fetch(API_ENDPOINTS.maintenance.create, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -92,9 +93,18 @@ export default function AddRepair() {
         <h1 className="text-2xl font-bold mb-6">เพิ่มการแจ้งซ่อมใหม่</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 gap-4">
+          <div>
+              <label className="block text-gray-700">ผู้แจ้งซ่อม</label>
+              <h2>
+                {formData.user_id +
+                  formData.username +
+                  " : " +
+                  formData.user_fullname}
+              </h2>
+            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                รูปภาพครุภัณฑ์
+                รูปภาพครุภัณฑ์/ปัญหา(ถ้ามี)
               </label>
               <ImageDisplay
                 urls={formData.img_url}
@@ -126,31 +136,23 @@ export default function AddRepair() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-                <div>{formData.asset_id}</div>
+              <div>{formData.asset_id}</div>
               <SearchSelectAssets
                 onAssetSelected={(asset) => {
                   if (asset) {
                     setFormData((prev) => ({
                       ...prev,
                       asset_id: asset.asset_id,
-                      //img_url: asset.img_url || 'noimg.jpg'
                     }));
+                    setShowTechnicianAssignment(true); // Show technician assignment after asset selection
                   }
                 }}
+                required
               />
             </div>
             <div>
-              <label className="block text-gray-700">ผู้แจ้งซ่อม</label>
-              <div>
-                {formData.user_id +
-                  formData.username +
-                  " : " +
-                  formData.user_fullname}
-              </div>
-            </div>
-            <div>
               <label className="block text-gray-700">ความเร่งด่วน</label>
-              <div className="flex items-center mb-2">{formData.priority}</div>
+              {/* <div className="flex items-center mb-2">{formData.priority}</div> */}
               <select
                 name="priority"
                 value={formData.priority}
@@ -170,7 +172,7 @@ export default function AddRepair() {
                 ))}
               </select>
             </div>
-            <div>
+            {/* <div>
               <div className="flex items-center mb-2">
                 {formData.request_status}
               </div>
@@ -193,41 +195,39 @@ export default function AddRepair() {
                   </option>
                 ))}
               </select>
-            </div>
-            <div>
-              <label className="block text-gray-700">รายละเอียดปัญหา</label>
-              <textarea
-                name="problem_detail"
-                value={formData.problem_detail}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-lg"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700">วันที่แจ้ง</label>
-              <input
-                type="date"
-                name="request_date"
-                value={formData.request_date}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-lg"
-                required
-              />
-            </div>
-            <div className="col-span-2">
-              <div>{formData.technician_id}</div>
-              {/* <TechnicianAssignment 
-                onTechnicianAssigned={(tech) => {
-                  setFormData(prev => ({
-                    ...prev,
-                    technician_id: tech.user_id,
-                    technician_username: tech.username,
-                    technician_name: `${tech.f_name} ${tech.l_name}`
-                  }))
-                }}
-              /> */}
-            </div>
+            </div> */}
+            {/* Show TechnicianAssignment only when asset is selected */}
+            {showTechnicianAssignment && (
+              <div className="col-span-2">
+                <div className="border rounded-lg p-4 bg-gray-50">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="font-medium">ช่างซ่อมที่ได้รับมอบหมาย</h3>
+                  </div>
+                  <TechnicianAssignment
+                    onTechnicianAssigned={(tech) => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        technician_id: tech.user_id,
+                        technician_username: tech.username,
+                        technician_name: `${tech.f_name} ${tech.l_name}`,
+                      }));
+                    }}
+                    required
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="grid grid-cols-1 gap-4">
+            <label className="block text-gray-700">รายละเอียดปัญหา</label>
+            <textarea
+              name="problem_detail"
+              value={formData.problem_detail}
+              onChange={handleChange}
+              rows="4"
+              className="w-full px-3 py-2 border rounded-lg"
+              required
+            ></textarea>
           </div>
           <button
             type="submit"

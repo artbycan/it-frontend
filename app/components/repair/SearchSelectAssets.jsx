@@ -88,6 +88,7 @@ export default function SearchSelectAssets({ onAssetSelected }) {
             className="w-full px-3 py-2 border rounded-lg"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            required
           />
 
           {loading && (
