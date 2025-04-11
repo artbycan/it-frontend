@@ -1,13 +1,14 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import Link from 'next/link';
 import { API_ENDPOINTS } from "@/app/config/api";
 import { getAuthHeaders } from "@/app/utils/auth";
 import Image from "next/image";
 import RepairStatus from "@/app/components/repair/RepairStatus";
 import RepairPriority from "@/app/components/repair/RepairPriority";
 import ImageDisplay from "@/app/components/ImageDisplay";
-import UserLayout from "@/app/components/UserLayout";
+import AdminLayout from "@/app/components/AdminLayout";
 
 export default function RepairDetail() {
   const params = useParams();
@@ -50,7 +51,7 @@ export default function RepairDetail() {
     return <div className="text-center p-8">ไม่พบข้อมูลการแจ้งซ่อม</div>;
 
   return (
-    <UserLayout title="รายละเอียดการแจ้งซ่อม" backLink="/repair">
+    <AdminLayout title="รายละเอียดการแจ้งซ่อม" backLink="/repair">
       <div className="container mx-auto p-6 relative" >
 
         <div className="bg-white rounded-lg shadow-lg p-6">
@@ -146,10 +147,20 @@ export default function RepairDetail() {
                 </div>
               </div>
             )}
+
+            {/* Maintenance Logs */}
+            <div className="md:col-span-2 mt-6">
+              <Link
+                href={`/admin/repair/maintenance_log/${params.request_id}`}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4 flex items-center gap-2 w-fit"
+              >
+                ▶️ ประวัติการดำเนินการ
+              </Link>
+            </div>
           </div>
         </div>
 
       </div>
-    </UserLayout>
+    </AdminLayout>
   );
 }

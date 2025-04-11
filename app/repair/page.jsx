@@ -16,36 +16,38 @@ export default function RepairDashboard() {
   const [pageSize, setPageSize] = useState(10);
 
   const handleCancel = async (request_id) => {
-    if (!window.confirm('ต้องการยกเลิกการแจ้งซ่อมนี้หรือไม่?')) {
+    if (!window.confirm("ต้องการยกเลิกการแจ้งซ่อมนี้หรือไม่?")) {
       return;
     }
 
     try {
       const response = await fetch(API_ENDPOINTS.maintenance.update, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
           ...getAuthHeaders(),
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           request_id: request_id,
-          request_status: "5"
-        })
+          request_status: "5",
+        }),
       });
 
       const result = await response.json();
       if (result.status === 200) {
         // Update local state to reflect the change
-        setRepairs(repairs.map(repair => 
-          repair.request_id === request_id 
-            ? { ...repair, request_status: "5" }
-            : repair
-        ));
+        setRepairs(
+          repairs.map((repair) =>
+            repair.request_id === request_id
+              ? { ...repair, request_status: "5" }
+              : repair
+          )
+        );
       } else {
-        alert('ไม่สามารถยกเลิกการแจ้งซ่อมได้');
+        alert("ไม่สามารถยกเลิกการแจ้งซ่อมได้");
       }
     } catch (error) {
-      alert('เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์');
+      alert("เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์");
     }
   };
 
@@ -108,8 +110,8 @@ export default function RepairDashboard() {
   }, []);
 
   return (
-    <div className="container mx-auto p-6">
-      <UserLayout>
+    <UserLayout>
+      <div className="container mx-auto p-6">
         <h1 className="text-2xl font-bold mb-6">ประวัติการแจ้งซ่อม</h1>
 
         {/* Search and Page Size Controls */}
@@ -211,17 +213,19 @@ export default function RepairDashboard() {
                         </Link>
                         <Link
                           href={`/repair/edit/${repair.request_id}`}
-                          className="text-indigo-600 hover:text-indigo-900">
-                        <button
-                          className="text-yellow-600 hover:text-yellow-800"
-                          title="แก้ไข"
+                          className="text-indigo-600 hover:text-indigo-900"
                         >
-                          ✏️
-                        </button>
+                          <button
+                            className="text-yellow-600 hover:text-yellow-800"
+                            title="แก้ไข"
+                          >
+                            ✏️
+                          </button>
                         </Link>
-                        <button 
-                          onClick={() => handleCancel(repair.request_id)} 
-                          title="ยกเลิก">
+                        <button
+                          onClick={() => handleCancel(repair.request_id)}
+                          title="ยกเลิก"
+                        >
                           🗑️
                         </button>
                       </td>
@@ -283,7 +287,7 @@ export default function RepairDashboard() {
             )}
           </>
         )}
-      </UserLayout>
-    </div>
+      </div>
+    </UserLayout>
   );
 }

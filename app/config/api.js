@@ -69,5 +69,11 @@ export const API_ENDPOINTS = {
   task: {
     assignTaskRandom: `${API_BASE_URL}/task/assign_task_random`,
   },
+  maintenance_log: {
+    add: `${API_BASE_URL}/maintenance_log/add`,
+    getByRequest: `${API_BASE_URL}/maintenance_log/getbyrequest`,
+    getById: `${API_BASE_URL}/maintenance_log/getid`,
+    getAll: `${API_BASE_URL}/maintenance_log/get`,
+  },
   // Add more endpoint categories here as needed
 }
