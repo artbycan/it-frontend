@@ -5,10 +5,11 @@ import Link from 'next/link'
 import AdminLayout from '@/app/components/AdminLayout'
 import { API_ENDPOINTS } from '@/app/config/api'
 import { getAuthHeaders } from '@/app/utils/auth'
-import ImageDisplay from '@/app/components/ImageDisplay'
-import UploadFile from '@/app/components/UploadFile'
-import StockForm from '@/app/components/stock/StockForm'
+// import ImageDisplay from '@/app/components/ImageDisplay'
+// import UploadFile from '@/app/components/UploadFile'
+// import StockForm from '@/app/components/stock/StockForm'
 import AddStockModal from '@/app/components/stock/AddStockModal'
+import StockUseModal from '@/app/components/stock/StockUseModal'
 
 export default function StockLevelsDashboard() {
   const [stocks, setStocks] = useState([])
@@ -18,7 +19,9 @@ export default function StockLevelsDashboard() {
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [isAddStockModalOpen, setIsAddStockModalOpen] = useState(false)
+  const [isStockUseModalOpen, setIsStockUseModalOpen] = useState(false)
   const [selectedStockId, setSelectedStockId] = useState(null)
+  const [selectedStock, setSelectedStock] = useState(null)
 
   const router = useRouter()
 
@@ -118,6 +121,11 @@ export default function StockLevelsDashboard() {
     setIsAddStockModalOpen(true)
   }
 
+  const handleUseStock = (stock) => {
+    setSelectedStock(stock)
+    setIsStockUseModalOpen(true)
+  }
+
   return (
     <AdminLayout>
       <div className="container mx-auto p-6">
@@ -213,6 +221,13 @@ export default function StockLevelsDashboard() {
                         >
                           ➕
                         </button>
+                        <button
+                          //onClick={() => handleUseStock(stock)}
+                          className="text-orange-600 hover:text-orange-800 mr-2"
+                          title="ใช้สต็อก"
+                        >
+                          📦
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -268,6 +283,17 @@ export default function StockLevelsDashboard() {
           onClose={() => setIsAddStockModalOpen(false)}
           stockId={selectedStockId}
           onSuccess={fetchStocks}
+        />
+      )}
+      {/* ใช้ทดสอบการใช้สต็อก */}
+      {isStockUseModalOpen && (
+        <StockUseModal
+          isOpen={isStockUseModalOpen}
+          onClose={() => setIsStockUseModalOpen(false)}
+          stock={selectedStock}
+          onSuccess={fetchStocks}
+          userId={12} // Pass the actual user ID from your auth context
+          logId={1}   // Pass the actual log ID from your application state
         />
       )}
     </AdminLayout>
