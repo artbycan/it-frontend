@@ -75,5 +75,13 @@ export const API_ENDPOINTS = {
     getById: `${API_BASE_URL}/maintenance_log/getid`,
     getAll: `${API_BASE_URL}/maintenance_log/get`,
   },
+  stock_levels: {
+    getAll: `${API_BASE_URL}/stock_levels/get`,
+    getById: `${API_BASE_URL}/stock_levels/getid`,
+    create: `${API_BASE_URL}/stock_levels/add`,
+    update: `${API_BASE_URL}/stock_levels/update`,
+    delete: `${API_BASE_URL}/stock_levels/delete`,
+    stockAdd: `${API_BASE_URL}/stock-add/add`,
+  },
   // Add more endpoint categories here as needed
 }

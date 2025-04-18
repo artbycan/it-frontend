@@ -1,20 +1,27 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import Link from 'next/link';
 import { API_ENDPOINTS } from "@/app/config/api";
 import { getAuthHeaders } from "@/app/utils/auth";
-import Image from "next/image";
+//import Image from "next/image";
+import Link from 'next/link';
 import RepairStatus from "@/app/components/repair/RepairStatus";
 import RepairPriority from "@/app/components/repair/RepairPriority";
 import ImageDisplay from "@/app/components/ImageDisplay";
-import AdminLayout from "@/app/components/AdminLayout";
+import UserLayout from "@/app/components/UserLayout";
+import MaintenanceLogList from "@/app/components/repair/MaintenanceLogList";
+import MaintenanceLog from "@/app/components/repair/MaintenanceLog";
 
 export default function RepairDetail() {
   const params = useParams();
   const [repair, setRepair] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showLogPopup, setShowLogPopup] = useState(false);
+  const [logs, setLogs] = useState([]);
+  const [loadingLogs, setLoadingLogs] = useState(false);
+  const [logError, setLogError] = useState(null);
+  const [showAddLogForm, setShowAddLogForm] = useState(false);
 
   useEffect(() => {
     const fetchRepairDetail = async () => {
@@ -45,13 +52,40 @@ export default function RepairDetail() {
     }
   }, [params.request_id]);
 
+  const fetchMaintenanceLogs = async () => {
+    try {
+      setLoadingLogs(true);
+      const response = await fetch(
+        `${API_ENDPOINTS.maintenance_log.getByRequest}/${params.request_id}`,
+        {
+          headers: getAuthHeaders(),
+        }
+      );
+      const result = await response.json();
+      if (result.status === 200) {
+        setLogs(result.data);
+      } else {
+        setLogError("ไม่สามารถดึงข้อมูลประวัติการดำเนินการได้");
+      }
+    } catch (error) {
+      setLogError("เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์");
+    } finally {
+      setLoadingLogs(false);
+    }
+  };
+
+  const handleLogCreated = async (logId) => {
+    setShowAddLogForm(false);
+    await fetchMaintenanceLogs(); // Refresh log list
+  };
+
   if (loading) return <div className="text-center p-8">กำลังโหลด...</div>;
   if (error) return <div className="text-center p-8 text-red-600">{error}</div>;
   if (!repair)
     return <div className="text-center p-8">ไม่พบข้อมูลการแจ้งซ่อม</div>;
 
   return (
-    <AdminLayout title="รายละเอียดการแจ้งซ่อม" backLink="/repair">
+    <UserLayout title="รายละเอียดการแจ้งซ่อม" backLink="/repair">
       <div className="container mx-auto p-6 relative" >
 
         <div className="bg-white rounded-lg shadow-lg p-6">
@@ -149,18 +183,64 @@ export default function RepairDetail() {
             )}
 
             {/* Maintenance Logs */}
-            <div className="md:col-span-2 mt-6">
-              <Link
-                href={`/admin/repair/maintenance_log/${params.request_id}`}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4 flex items-center gap-2 w-fit"
+            <div className="md:col-span-2 mt-6 flex gap-4">
+              <button
+                onClick={() => {
+                  setShowLogPopup(true);
+                  fetchMaintenanceLogs();
+                }}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4 flex items-center gap-2"
               >
-                ▶️ ประวัติการดำเนินการ
-              </Link>
+                ▶️ ประวัติการดำเนินการแจ้งซ่อม
+              </button>
+              <button
+                onClick={() => setShowAddLogForm(true)}
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mb-4 flex items-center gap-2"
+              >
+                ➕ เพิ่มประวัติการแจ้งซ่อมรายการใหม่
+              </button>
             </div>
+
           </div>
         </div>
 
+        {showAddLogForm && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto relative">
+              <button
+                onClick={() => setShowAddLogForm(false)}
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+
+              <h2 className="text-2xl font-bold mb-6">
+                เพิ่มรายการดำเนินการใหม่
+              </h2>
+
+              <MaintenanceLog
+                requestId={params.request_id}
+                technicianId={repair.technician_id}
+                onLogCreated={handleLogCreated}
+                onError={(error) => {
+                  console.error(error);
+                  setShowAddLogForm(false);
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        {showLogPopup && (
+          <MaintenanceLogList
+            logs={logs}
+            loading={loadingLogs}
+            error={logError}
+            onClose={() => setShowLogPopup(false)}
+          />
+        )}
+
       </div>
-    </AdminLayout>
+    </UserLayout>
   );
 }

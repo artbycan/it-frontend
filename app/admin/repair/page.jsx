@@ -266,21 +266,24 @@ export default function RepairDashboard() {
                         >
                           ✓ รับงาน
                         </button>
-                      ) : null}
-                      <button
-                        onClick={() => handleViewDetail(repair.request_id)}
-                        className="text-blue-600 hover:text-blue-800 mr-2"
-                        title="ดูรายละเอียด"
-                      >
-                        ℹ️
-                      </button>
-                      <button
-                        onClick={() => handleEditRepair(repair.request_id)}
-                        className="text-yellow-600 hover:text-yellow-800"
-                        title="แก้ไข"
-                      >
-                        ✏️
-                      </button>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => handleViewDetail(repair.request_id)}
+                            className="text-blue-600 hover:text-blue-800 mr-2"
+                            title="ดูรายละเอียด"
+                          >
+                            ℹ️
+                          </button>
+                          <button
+                            onClick={() => handleEditRepair(repair.request_id)}
+                            className="text-yellow-600 hover:text-yellow-800"
+                            title="แก้ไข"
+                          >
+                            ✏️
+                          </button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 ))}
