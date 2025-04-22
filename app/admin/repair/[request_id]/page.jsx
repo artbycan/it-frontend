@@ -5,12 +5,13 @@ import { API_ENDPOINTS } from "@/app/config/api";
 import { getAuthHeaders } from "@/app/utils/auth";
 //import Image from "next/image";
 import Link from 'next/link';
-import RepairStatus from "@/app/components/repair/RepairStatus";
+//import RepairStatus from "@/app/components/repair/RepairStatus";
 import RepairPriority from "@/app/components/repair/RepairPriority";
 import ImageDisplay from "@/app/components/ImageDisplay";
 import UserLayout from "@/app/components/UserLayout";
 import MaintenanceLogList from "@/app/components/repair/MaintenanceLogList";
 import MaintenanceLog from "@/app/components/repair/MaintenanceLog";
+import RepairStatusSelect from '@/app/components/repair/RepairStatusSelect';
 
 export default function RepairDetail() {
   const params = useParams();
@@ -130,10 +131,7 @@ export default function RepairDetail() {
                     {new Date(repair.request_date).toLocaleDateString("th-TH")}
                   </p>
                 </div>
-                <div>
-                  <p className="text-gray-600">สถานะ</p>
-                  <RepairStatus value={repair.request_status} />
-                </div>
+                
                 <div>
                   <p className="text-gray-600">ความเร่งด่วน</p>
                   <RepairPriority value={repair.priority} />
@@ -146,6 +144,21 @@ export default function RepairDetail() {
               <h2 className="text-xl font-semibold">รายละเอียดปัญหา</h2>
               <p className="bg-gray-50 p-4 rounded">{repair.problem_detail}</p>
             </div>
+
+            <div>
+                  <p className="text-gray-600">สถานะ</p>
+                  <RepairStatusSelect
+                    requestId={repair.request_id}
+                    value={repair.request_status}
+                    onUpdate={(data) => {
+                      setRepair(prev => ({
+                        ...prev,
+                        request_status: data.request_status,
+                        updated_at: data.updated_at
+                      }))
+                    }}
+                  />
+                </div>
 
             {/* Technician Information */}
             <div className="md:col-span-2 space-y-4">

@@ -4,6 +4,7 @@ import { API_ENDPOINTS } from '@/app/config/api'
 import { getAuthHeaders } from '@/app/utils/auth'
 import ImageDisplay from '@/app/components/ImageDisplay'
 import UploadFile from '@/app/components/UploadFile'
+import SearchSelectSpares from '@/app/components/stock/SearchSelectSpares'
 import { MAINTENANCE_TYPES, getTypeColor } from './MaintenanceTypes'
 
 export default function MaintenanceLog({ 
@@ -27,6 +28,9 @@ export default function MaintenanceLog({
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   })
+
+  // Add new state for parsed spare parts data
+  const [newSpare_parts, setNewSpare_parts] = useState(null)
 
   const handleSubmit = async () => {
     try {
@@ -111,6 +115,38 @@ export default function MaintenanceLog({
 
       <div>
         <label className="block text-sm font-medium text-gray-700">
+        </label>
+        <SearchSelectSpares
+          value={formData.spare_parts}
+          onChange={(spareData) => {
+            try {
+              const parsedSpare = JSON.parse(spareData)
+              setNewSpare_parts(parsedSpare)
+              
+              // Create formatted action text
+              const actionText = `ดำเนินการเปลี่ยนอะไหล่: ${parsedSpare.item_name} ` +
+                `(รหัส: ${parsedSpare.item_no}) ` +
+                `หมวดหมู่: ${parsedSpare.category} ` +
+                `จำนวน: 1 ${parsedSpare.unit} ` +
+                `ราคา: ${parsedSpare.price} บาท ` +
+                `รายละเอียด: ${parsedSpare.description || '-'}`
+
+              setFormData(prev => ({ 
+                ...prev, 
+                spare_parts: spareData,
+                action_taken: actionText,
+                cost: parsedSpare.price
+              }))
+            } catch (error) {
+              console.error('Error parsing spare parts data:', error)
+              onError('ข้อมูลอะไหล่ไม่ถูกต้อง')
+            }
+          }}
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
           การดำเนินการ
         </label>
         <textarea
@@ -122,21 +158,6 @@ export default function MaintenanceLog({
           rows="3"
           className="w-full px-3 py-2 border rounded-lg"
           required
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          อะไหล่ที่ใช้
-        </label>
-        <textarea
-          value={formData.spare_parts}
-          onChange={(e) => setFormData(prev => ({ 
-            ...prev, 
-            spare_parts: e.target.value 
-          }))}
-          rows="2"
-          className="w-full px-3 py-2 border rounded-lg"
         />
       </div>
 
@@ -197,6 +218,7 @@ export default function MaintenanceLog({
 
       <button
         onClick={handleSubmit}
+        //onMouseOver={console.log(formData)}
         className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
       >
         บันทึกข้อมูล

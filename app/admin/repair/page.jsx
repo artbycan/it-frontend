@@ -273,7 +273,7 @@ export default function RepairDashboard() {
                             className="text-blue-600 hover:text-blue-800 mr-2"
                             title="ดูรายละเอียด"
                           >
-                            ℹ️
+                            ℹ️รายละเอียด
                           </button>
                           <button
                             onClick={() => handleEditRepair(repair.request_id)}
