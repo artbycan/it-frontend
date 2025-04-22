@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { REPAIR_STATUS, getStatusLabel, getStatusColor } from './RepairStatus'
+import { REPAIR_STATUS, getStatusLabel, getStatusColor } from '@/app/components/repair/RepairStatus'
 import { API_ENDPOINTS } from '@/app/config/api'
 import { getAuthHeaders } from '@/app/utils/auth'
 

@@ -5,7 +5,8 @@ import { getAuthHeaders } from '@/app/utils/auth'
 import ImageDisplay from '@/app/components/ImageDisplay'
 import UploadFile from '@/app/components/UploadFile'
 import SearchSelectSpares from '@/app/components/stock/SearchSelectSpares'
-import { MAINTENANCE_TYPES, getTypeColor } from './MaintenanceTypes'
+//import { MAINTENANCE_TYPES, getTypeColor } from './MaintenanceTypes'
+import RepairStatusSelect from '@/app/components/repair/RepairStatusSelect'
 
 export default function MaintenanceLog({ 
   requestId, 
@@ -24,7 +25,7 @@ export default function MaintenanceLog({
     note: '-',
     spare_parts: '-',
     start_date: new Date().toISOString().slice(0, 16),
-    type_action: 0,
+    type_action: 1,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   })
@@ -60,26 +61,15 @@ export default function MaintenanceLog({
         <label className="block text-sm font-medium text-gray-700">
           ประเภทการดำเนินการ
         </label>
-        <select
+        <RepairStatusSelect
+          requestId={requestId}
           value={formData.type_action}
-          onChange={(e) => setFormData(prev => ({ 
+          onUpdate={(data) => setFormData(prev => ({ 
             ...prev, 
-            type_action: parseInt(e.target.value) 
+            type_action: data.request_status 
           }))}
-          className="w-full px-3 py-2 border rounded-lg"
-          required
-        >
-          <option value="" disabled>เลือกประเภทการดำเนินการ</option>
-          {MAINTENANCE_TYPES.map((type) => (
-            <option
-              key={type.id}
-              value={type.id}
-              className={type.color}
-            >
-              {type.name}
-            </option>
-          ))}
-        </select>
+          disabled={false}
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-4">

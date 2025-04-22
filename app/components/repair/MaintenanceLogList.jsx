@@ -1,7 +1,7 @@
 "use client";
 import { useState, useMemo } from "react";
 import Image from "next/image";
-import { MAINTENANCE_TYPES } from "./MaintenanceTypes";
+import { REPAIR_STATUS } from "./RepairStatus";
 import ImageDisplay from "../ImageDisplay";
 
 export default function MaintenanceLogList({ logs = [] }) {
@@ -20,8 +20,8 @@ export default function MaintenanceLogList({ logs = [] }) {
   };
 
   const getActionTypeName = (typeId) => {
-    const type = MAINTENANCE_TYPES.find((t) => t.id === parseInt(typeId));
-    return type ? type.name : "ไม่ระบุ";
+    const status = REPAIR_STATUS.find((s) => s.id === typeId?.toString());
+    return status ? status.name : "ไม่ระบุ";
   };
 
   const shouldShowDetails = (typeAction) => {

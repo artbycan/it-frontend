@@ -154,7 +154,6 @@ export default function RepairDetail() {
                       setRepair(prev => ({
                         ...prev,
                         request_status: data.request_status,
-                        updated_at: data.updated_at
                       }))
                     }}
                   />
