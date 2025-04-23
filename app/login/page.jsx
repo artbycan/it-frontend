@@ -187,7 +187,7 @@ export default function LoginPage() {
               className="w-full flex justify-center items-center gap-2 py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#00B900] hover:bg-[#00a000] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00B900] disabled:bg-[#80d980]"
             >
               <img 
-                src="/line-icon.png" 
+                src="https://cdn-icons-png.freepik.com/256/2335/2335324.png" 
                 alt="Line" 
                 className="w-5 h-5"
               />
