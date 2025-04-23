@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { API_ENDPOINTS } from '../config/api.js'
+import { getLineLoginUrl } from '../config/line'
+import { LINE_CONFIG } from '../config/line'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -63,7 +65,7 @@ export default function LoginPage() {
           localStorage.setItem('user_id', result.data.user_id)
 
           // Redirect to admin dashboard
-          router.push('/admin')
+          router.push('/')
         } else {
           setError('เกิดข้อผิดพลาดในการสร้างเซสชัน')
         }
@@ -73,6 +75,34 @@ export default function LoginPage() {
     } catch (error) {
       setError('เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์')
       console.error('Login error:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const checkLineConnection = async (token) => {
+    try {
+      const response = await fetch(LINE_CONFIG.friendshipStatusUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      const data = await response.json()
+      return data.friendFlag
+    } catch (error) {
+      console.error('Error checking LINE connection:', error)
+      return false
+    }
+  }
+
+  const handleLineLogin = async () => {
+    try {
+      setLoading(true)
+      const lineLoginUrl = getLineLoginUrl()
+      window.location.href = lineLoginUrl
+    } catch (error) {
+      setError('เกิดข้อผิดพลาดในการเชื่อมต่อกับ LINE')
+      console.error('LINE login error:', error)
     } finally {
       setLoading(false)
     }
@@ -137,6 +167,34 @@ export default function LoginPage() {
             </button>
           </div>
         </form>
+
+        <div className="mt-6">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">
+                หรือเข้าสู่ระบบด้วย
+              </span>
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <button
+              onClick={handleLineLogin}
+              disabled={loading}
+              className="w-full flex justify-center items-center gap-2 py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#00B900] hover:bg-[#00a000] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00B900] disabled:bg-[#80d980]"
+            >
+              <img 
+                src="/line-icon.png" 
+                alt="Line" 
+                className="w-5 h-5"
+              />
+              {loading ? 'กำลังดำเนินการ...' : 'เข้าสู่ระบบด้วย LINE'}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   )
