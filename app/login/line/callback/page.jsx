@@ -92,7 +92,7 @@ export default function LineCallback() {
 
         // Get LINE profile
         const lineProfile = await getLineProfile(lineAccessToken);
-        console.log("LINE Profile:", lineProfile);
+        //console.log("LINE Profile:", lineProfile);
 
         // Get user data from your backend
         const response = await fetch(API_ENDPOINTS.auth.lineLogin, {

@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { REPAIR_STATUS, getStatusLabel, getStatusColor } from '@/app/components/repair/RepairStatus'
 import { API_ENDPOINTS } from '@/app/config/api'
 import { getAuthHeaders } from '@/app/utils/auth'
+import { sendLineNotification } from '@/app/utils/line'
 
 export default function RepairStatusSelect({ 
   requestId, 
@@ -18,6 +19,19 @@ export default function RepairStatusSelect({
       setIsUpdating(true)
       setError(null)
 
+      // Get user LINE ID first
+      const userResponse = await fetch(`${API_ENDPOINTS.maintenance.getUser}/${requestId}`, {
+        headers: {
+          ...getAuthHeaders()
+        }
+      });
+      const userData = await userResponse.json();
+
+      if (!userData.data?.line_id) {
+        console.warn('No LINE ID found for this user');
+      }
+
+      // Update status
       const response = await fetch(`${API_ENDPOINTS.maintenance.update}`, {
         method: 'PUT',
         headers: {
@@ -28,19 +42,26 @@ export default function RepairStatusSelect({
           request_id: requestId,
           request_status: parseInt(newStatus)
         })
-      })
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (result.status === 200) {
-        onUpdate?.(result.data)
+        // Send LINE notification if we have a LINE ID
+        if (userData.data?.line_id) {
+          const status = REPAIR_STATUS.find(s => s.id === newStatus)?.name;
+          await sendLineNotification(userData.data.line_id, status);
+        }
+        
+        onUpdate?.(result.data);
       } else {
-        throw new Error(result.message || 'Failed to update status')
+        throw new Error(result.message || 'Failed to update status');
       }
     } catch (error) {
-      setError(error.message)
+      setError(error.message);
+      console.error('Status update error:', error);
     } finally {
-      setIsUpdating(false)
+      setIsUpdating(false);
     }
   }
 
