@@ -7,6 +7,7 @@ import UploadFile from '@/app/components/UploadFile'
 import SearchSelectSpares from '@/app/components/stock/SearchSelectSpares'
 //import { MAINTENANCE_TYPES, getTypeColor } from './MaintenanceTypes'
 import RepairStatusSelect from '@/app/components/repair/RepairStatusSelect'
+import { getUserLineId, sendRepairStatusNotification } from '@/app/components/line/LineNotification'
 
 export default function MaintenanceLog({ 
   requestId, 
@@ -47,6 +48,11 @@ export default function MaintenanceLog({
       const result = await response.json()
       if (result.status === 200) {
         onLogCreated(result.data.id)
+        // Get user LINE ID
+        const userData = await getUserLineId(requestId);
+        // Send LINE notification ส่งการเปลี่ยนสถานะการซ่อมผ่าน line
+        //console.log(requestId, userData, formData.type_action)
+        await sendRepairStatusNotification(requestId, userData, formData.type_action);
       } else {
         onError('ไม่สามารถบันทึกข้อมูลได้')
       }

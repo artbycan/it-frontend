@@ -69,7 +69,7 @@ export const API_ENDPOINTS = {
     update: `${API_BASE_URL}/maintenance/update`,
     delete: `${API_BASE_URL}/maintenance/delete`,
     getByTechnician: `${API_BASE_URL}/maintenance/getbytechnician`,
-    getUser: `${API_BASE_URL}/maintenance/user`,
+    getUser: `${API_BASE_URL}/maintenance/getid`,
   },
   task: {
     assignTaskRandom: `${API_BASE_URL}/task/assign_task_random`,
@@ -88,9 +88,6 @@ export const API_ENDPOINTS = {
     delete: `${API_BASE_URL}/stock_levels/delete`,
     stockAdd: `${API_BASE_URL}/stock_levels/stock-add/add`,
     stockUse: `${API_BASE_URL}/stock_levels/stock-use/add`,
-  },
-  line: {
-    sendNotification: `${API_BASE_URL}/line/notification/send`
   },
   // Add more endpoint categories here as needed
 }
