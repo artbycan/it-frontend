@@ -29,7 +29,7 @@ export default function RepairDashboard() {
         },
         body: JSON.stringify({
           request_id: request_id,
-          request_status: "5",
+          request_status: 5,
         }),
       });
 
@@ -39,7 +39,7 @@ export default function RepairDashboard() {
         setRepairs(
           repairs.map((repair) =>
             repair.request_id === request_id
-              ? { ...repair, request_status: "5" }
+              ? { ...repair, request_status: 5 }
               : repair
           )
         );

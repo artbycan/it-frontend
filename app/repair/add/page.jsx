@@ -33,7 +33,8 @@ export default function AddRepair() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const [showTechnicianAssignment, setShowTechnicianAssignment] = useState(false);
+  const [showTechnicianAssignment, setShowTechnicianAssignment] =
+    useState(false);
 
   // Add useEffect to set user_id after mount
   useEffect(() => {
@@ -93,7 +94,7 @@ export default function AddRepair() {
         <h1 className="text-2xl font-bold mb-6">เพิ่มการแจ้งซ่อมใหม่</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 gap-4">
-          <div>
+            <div>
               <label className="block text-gray-700">ผู้แจ้งซ่อม</label>
               <h2>
                 {formData.user_id +
@@ -106,17 +107,18 @@ export default function AddRepair() {
               <label className="block text-sm font-medium text-gray-700">
                 รูปภาพครุภัณฑ์/ปัญหา(ถ้ามี)
               </label>
-              <ImageDisplay
-                urls={formData.img_url}
-                // เปิดปิดส่วนแสดงภาพลบภาพ {true} เปิด ด
-                showDelete={true}
-                onDelete={(newUrls) => {
-                  setFormData((prev) => ({
-                    ...prev,
-                    img_url: newUrls,
-                  }));
-                }}
-              />
+              {formData.img_url !== "noimg.jpg" && (
+                <ImageDisplay
+                  urls={formData.img_url}
+                  showDelete={true}
+                  onDelete={(newUrls) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      img_url: newUrls || "noimg.jpg", // Set back to noimg.jpg if all images are deleted
+                    }));
+                  }}
+                />
+              )}
 
               <UploadFile
                 apiUrl={`${API_ENDPOINTS.files.upLoad}`}

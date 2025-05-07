@@ -3,16 +3,30 @@ import { getIronSession } from 'iron-session'
 import { sessionOptions } from './lib/session'
 
 export async function middleware(request) {
+  // Define public paths that don't require authentication
+  const publicPaths = ['/', '/about', '/login','/singup']
+  const isPublicPath = publicPaths.some(path => 
+    request.nextUrl.pathname === path || 
+    request.nextUrl.pathname.startsWith(path + '/')
+  )
+
+  // Allow access to public paths
+  if (isPublicPath) {
+    return NextResponse.next()
+  }
+
+  // Get session for authenticated routes
+  const session = await getIronSession(request, Response, sessionOptions)
+
+  // Redirect to login if not authenticated
+  if (!session?.user) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  // Special handling for admin paths
   if (request.nextUrl.pathname.startsWith('/admin')) {
-    const session = await getIronSession(request, Response, sessionOptions)
-
-    if (!session?.user) {
-      return NextResponse.redirect(new URL('/login', request.url))
-    }
-
     const { role, status } = session.user
-    const allowedRoles = ['5', '1','6']// Super Admin, Technician, Admin
-    // Check if the user has the required role and status
+    const allowedRoles = ['5', '1', '6'] // Super Admin, Technician, Admin
 
     if (status !== '0' || !allowedRoles.includes(role)) {
       return NextResponse.redirect(new URL('/unauthorized', request.url))
@@ -23,5 +37,8 @@ export async function middleware(request) {
 }
 
 export const config = {
-  matcher: '/admin/:path*',
+  matcher: [
+    // Match all request paths except for the ones you want to exclude
+    '/((?!api|_next|_static|_vercel|images|favicon|manifest|sw|workbox|worker|[\\w-]+\\.\\w+).*)',
+  ],
 }

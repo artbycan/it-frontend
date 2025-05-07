@@ -30,7 +30,7 @@ export default function AddAssetPage() {
     price: "",
     departments_id: "",
     departments_name: "",
-    user_id: "",
+    user_id: 0,
     name: "",
     serial_number: "",
     warranty: "",

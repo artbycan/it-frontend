@@ -88,6 +88,7 @@ export const API_ENDPOINTS = {
     delete: `${API_BASE_URL}/stock_levels/delete`,
     stockAdd: `${API_BASE_URL}/stock_levels/stock-add/add`,
     stockUse: `${API_BASE_URL}/stock_levels/stock-use/add`,
+    getStockUse: `${API_BASE_URL}/stock_levels/stock-use/get`,
   },
   // Add more endpoint categories here as needed
 }

@@ -22,7 +22,7 @@ export default function AddStockModal({ isOpen, onClose, stockId, onSuccess }) {
         body: JSON.stringify({
           quantity: Number(quantity),
           stock_id: stockId,
-          user_id: 12 // You might want to get this from your auth context
+          user_id: localStorage.getItem("user_id") // You might want to get this from your auth context
         })
       })
 

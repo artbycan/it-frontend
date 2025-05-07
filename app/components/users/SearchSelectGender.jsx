@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 
-const GENDER_OPTIONS = [
+export const GENDER_OPTIONS = [
   { id: '1', name: 'ชาย', description: 'เพศชาย' },
   { id: '2', name: 'หญิง', description: 'เพศหญิง' },
   { id: '3', name: 'ไม่ระบุเพศ', description: 'ไม่ระบุเพศ' }

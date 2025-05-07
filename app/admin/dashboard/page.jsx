@@ -18,7 +18,10 @@ import {
 } from "@mui/material";
 import DashboardLayout from "@/app/components/dashboard/DashboardLayout";
 import AdminLayout from "@/app/components/AdminLayout";
-import DashboardLayoutAll from "../../components/dashboard/DashboardLayoutAll";
+import DashboardLayoutAll from "@/app/components/dashboard/DashboardLayoutAll";
+import DashboardUser from "@/app/components/dashboard/DashboardUser";
+import DashboardAssets from "@/app/components/dashboard/DashboardAssets";
+import DashboardStock from "@/app/components/dashboard/DashboardStock";
 
 // Register ChartJS components
 ChartJS.register(
@@ -64,15 +67,35 @@ export default function DashboardPage() {
             <ToggleButton value="all" aria-label="all view">
               การแจ้งซ่อมมุมมองผู้ดูแลระบบ
             </ToggleButton>
+            <ToggleButton value="assets" aria-label="assets view">
+              สรุปข้อมูลครุภัณฑ์
+            </ToggleButton>
+            <ToggleButton value="stock" aria-label="stock view">
+              สต๊อกอะไหล่
+            </ToggleButton>
+            <ToggleButton value="user" aria-label="user view">
+              สรุปข้อมูลผู้ใช้งาน
+            </ToggleButton>
           </ToggleButtonGroup>
         </Box>
 
-        {/* <Typography variant="h5" align="center" sx={{ mb: 4 }}>
-          {view === "technician"
-            ? "Dashboard แสดงผลของช่างเทคนิค"
-            : "Dashboard แสดงผลของผู้ดูแลระบบ"}
-        </Typography> */}
-        {view === "technician" ? <DashboardLayout /> : <DashboardLayoutAll />}
+        {/* Render dashboard based on selected view */}
+        {(() => {
+          switch(view) {
+            case 'technician':
+              return <DashboardLayout />;
+            case 'all':
+              return <DashboardLayoutAll />;
+            case 'user':
+              return <DashboardUser />;
+            case 'assets':
+              return <DashboardAssets />; // Placeholder for assets view
+            case 'stock':
+              return <DashboardStock />; // Placeholder for stock view
+            default:
+              return <DashboardLayout />;
+          }
+        })()}
       </Box>
     </AdminLayout>
   );

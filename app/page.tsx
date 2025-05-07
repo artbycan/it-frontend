@@ -1,106 +1,187 @@
-import Image from "next/image";
-//import NavMenu from './components/NavMenu'
+"use client";
+import { useState, useEffect } from "react";
+import { format, parseISO } from "date-fns";
+import { th } from "date-fns/locale";
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import { Dialog, DialogContent, DialogTitle, IconButton } from '@mui/material';
+//import CloseIcon from '@mui/icons-material/Close';
+import { API_ENDPOINTS } from "@/app/config/api";
+
+interface MaintenanceRequest {
+  request_id: number;
+  assets_name: string;
+  assets_num: string;
+  user_username: string;
+  user_fname: string;
+  user_lname: string;
+  technician_username: string;
+  technician_fname: string;
+  technician_lname: string;
+  request_date: string;
+  request_status: number;
+  priority: number;
+  problem_detail: string;
+}
+
+interface CalendarEvent {
+  id: string;
+  title: string;
+  start: string;
+  backgroundColor: string;
+  borderColor: string;
+  textColor: string;
+  extendedProps: MaintenanceRequest;
+}
 
 export default function Home() {
-  return (
-    <div>
-      <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-        <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-          <Image
-            className="dark:invert"
-            src="/next.svg"
-            alt="Next.js logo"
-            width={180}
-            height={38}
-            priority
-          />
-          <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-            <li className="mb-2 tracking-[-.01em]">
-              Get started by editing{" "}
-              <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-                app/page.tsx
-              </code>
-              .
-            </li>
-            <li className="tracking-[-.01em]">
-              Save and see your changes instantly.
-            </li>
-          </ol>
+  const [maintenanceData, setMaintenanceData] = useState<MaintenanceRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<MaintenanceRequest | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-          <div className="flex gap-4 items-center flex-col sm:flex-row">
-            <a
-              className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-              href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Image
-                className="dark:invert"
-                src="/vercel.svg"
-                alt="Vercel logomark"
-                width={20}
-                height={20}
-              />
-              Deploy now
-            </a>
-            <a
-              className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-              href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Read our docs
-            </a>
-          </div>
-        </main>
-        <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-          <a
-            className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-            href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              aria-hidden
-              src="/file.svg"
-              alt="File icon"
-              width={16}
-              height={16}
-            />
-            Learn
-          </a>
-          <a
-            className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-            href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              aria-hidden
-              src="/window.svg"
-              alt="Window icon"
-              width={16}
-              height={16}
-            />
-            Examples
-          </a>
-          <a
-            className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-            href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              aria-hidden
-              src="/globe.svg"
-              alt="Globe icon"
-              width={16}
-              height={16}
-            />
-            Go to nextjs.org →
-          </a>
-        </footer>
+  useEffect(() => {
+    const fetchMaintenanceData = async () => {
+      try {
+        const response = await fetch(`${API_ENDPOINTS.maintenance.getAll}`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const result = await response.json();
+        if (result.status === 200) {
+          setMaintenanceData(result.data);
+        } else {
+          setError(result.message);
+        }
+      } catch (error) {
+        setError('Failed to fetch maintenance data');
+        console.error('Error:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMaintenanceData();
+  }, []);
+
+  const getPriorityColor = (priority: number): { bg: string; border: string; text: string } => {
+    switch (priority) {
+      case 1: return { bg: '#FEF2F2', border: '#EF4444', text: '#991B1B' };
+      case 2: return { bg: '#FFF7ED', border: '#F97316', text: '#9A3412' };
+      case 3: return { bg: '#FEFCE8', border: '#EAB308', text: '#854D0E' };
+      case 4: return { bg: '#F0FDF4', border: '#22C55E', text: '#166534' };
+      default: return { bg: '#F9FAFB', border: '#9CA3AF', text: '#374151' };
+    }
+  };
+
+  const events: CalendarEvent[] = maintenanceData.map(request => {
+    const colors = getPriorityColor(request.priority);
+    return {
+      id: request.request_id.toString(),
+      title: `${request.assets_name} (${request.user_fname})`,
+      start: request.request_date,
+      backgroundColor: colors.bg,
+      borderColor: colors.border,
+      textColor: colors.text,
+      extendedProps: request
+    };
+  });
+
+  const handleEventClick = (info: any) => {
+    setSelectedEvent(info.event.extendedProps);
+    setIsModalOpen(true);
+  };
+
+  if (loading) return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+  if (error) return <div className="flex justify-center items-center min-h-screen text-red-500">{error}</div>;
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-6">ปฏิทินการดำเนินงาน</h1>
+      
+      <div className="bg-white rounded-lg shadow-lg p-4">
+        <FullCalendar
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          initialView="dayGridMonth"
+          headerToolbar={{
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+          }}
+          locale="th"
+          events={events}
+          eventClick={handleEventClick}
+          height="auto"
+          buttonText={{
+            today: 'วันนี้',
+            month: 'เดือน',
+            week: 'สัปดาห์',
+            day: 'วัน'
+          }}
+        />
       </div>
+
+      <Dialog 
+        open={isModalOpen} 
+        onClose={() => setIsModalOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle className="flex justify-between items-center">
+          <span>รายละเอียดการแจ้งซ่อม</span>
+          <IconButton onClick={() => setIsModalOpen(false)}>
+            ปิด
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          {selectedEvent && (
+            <div className="grid gap-4 p-4">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <h3 className="font-semibold mb-2">ข้อมูลครุภัณฑ์</h3>
+                  <p className="text-sm">
+                    ชื่อ: {selectedEvent.assets_name}<br />
+                    รหัส: {selectedEvent.assets_num}
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold mb-2">ผู้แจ้ง</h3>
+                  <p className="text-sm">
+                    Username: {selectedEvent.user_username}<br />
+                    ชื่อ-สกุล: {selectedEvent.user_fname} {selectedEvent.user_lname}
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold mb-2">ช่างผู้ดูแล</h3>
+                  <p className="text-sm">
+                    Username: {selectedEvent.technician_username}<br />
+                    ชื่อ-สกุล: {selectedEvent.technician_fname} {selectedEvent.technician_lname}
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold mb-2">สถานะ</h3>
+                  <span className={`inline-block px-2 py-1 rounded-full text-sm ${
+                    selectedEvent.request_status === 2 ? 'bg-green-200 text-green-800' : 'bg-yellow-200 text-yellow-800'
+                  }`}>
+                    {selectedEvent.request_status === 2 ? 'เสร็จสิ้น' : 'กำลังดำเนินการ'}
+                  </span>
+                </div>
+
+                <div className="md:col-span-2">
+                  <h3 className="font-semibold mb-2">รายละเอียดปัญหา</h3>
+                  <p className="text-sm">{selectedEvent.problem_detail}</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

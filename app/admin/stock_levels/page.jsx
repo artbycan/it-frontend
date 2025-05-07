@@ -221,13 +221,13 @@ export default function StockLevelsDashboard() {
                         >
                           ➕
                         </button>
-                        <button
+                        {/* <button
                           //onClick={() => handleUseStock(stock)}
                           className="text-orange-600 hover:text-orange-800 mr-2"
                           title="ใช้สต็อก"
                         >
                           📦
-                        </button>
+                        </button> */}
                       </td>
                     </tr>
                   ))}
@@ -292,7 +292,7 @@ export default function StockLevelsDashboard() {
           onClose={() => setIsStockUseModalOpen(false)}
           stock={selectedStock}
           onSuccess={fetchStocks}
-          userId={12} // Pass the actual user ID from your auth context
+          userId={localStorage.getItem("user_id")} // Pass the actual user ID from your auth context
           logId={1}   // Pass the actual log ID from your application state
         />
       )}

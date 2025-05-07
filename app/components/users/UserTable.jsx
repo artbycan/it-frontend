@@ -30,20 +30,20 @@ export default function UserTable() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch(API_ENDPOINTS.users.getAll, {
+      const response = await fetch(`${API_ENDPOINTS.users.getAll}`, {
         headers: getAuthHeaders()
       })
       const result = await response.json()
       
       if (result.status === 200) {
-        // Flatten the nested array structure
-        const flattenedUsers = result.data.map(userArray => userArray[0])
-        setUsers(flattenedUsers)
+        // Set users directly from result.data (no need to flatten)
+        setUsers(result.data)
       } else {
         setError('ไม่สามารถดึงข้อมูลได้')
       }
     } catch (err) {
       setError('เกิดข้อผิดพลาดในการเชื่อมต่อ')
+      console.error('Error:', err)
     } finally {
       setLoading(false)
     }
@@ -52,19 +52,27 @@ export default function UserTable() {
   // Get current users for pagination
   const indexOfLastUser = currentPage * pageSize
   const indexOfFirstUser = indexOfLastUser - pageSize
-  const filteredUsers = users.filter(user => 
-    user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.f_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.l_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredUsers = users.filter(user => {
+    if (!user) return false
+    
+    const searchTermLower = searchTerm.toLowerCase()
+    const username = user.username?.toLowerCase() || ''
+    const firstName = user.f_name?.toLowerCase() || ''
+    const lastName = user.l_name?.toLowerCase() || ''
+    const email = user.email?.toLowerCase() || ''
+    const department = user.departments_name?.toLowerCase() || ''
+
+    return username.includes(searchTermLower) ||
+           firstName.includes(searchTermLower) ||
+           lastName.includes(searchTermLower) ||
+           email.includes(searchTermLower) ||
+           department.includes(searchTermLower)
+  })
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser)
   const totalPages = Math.ceil(filteredUsers.length / pageSize)
 
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber)
-
-  // Remove the old getStatusColor function
 
   // Add function to get status name
   const getStatusName = (statusId) => {
@@ -159,19 +167,19 @@ export default function UserTable() {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {currentUsers.map((user) => (
+            {currentUsers.map((user) => user && (
               <tr key={user.user_id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {user.user_id}
+                  {user.user_id || '-'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {user.username}
+                  {user.username || '-'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {`${user.f_name} ${user.l_name}`}
+                  {user.f_name && user.l_name ? `${user.f_name} ${user.l_name}` : '-'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {user.email}
+                  {user.email || '-'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {user.phone_number || '-'}

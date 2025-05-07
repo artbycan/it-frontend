@@ -142,7 +142,6 @@ export default function AssetsPage() {
     .sort((a, b) => b.asset_id - a.asset_id);
 
   const Pagination = () => {
-    // No data to paginate
     if (totalCount === 0) return null;
 
     const pageNumbers = [];
@@ -161,87 +160,89 @@ export default function AssetsPage() {
     }
 
     return (
-      <div className="px-6 py-4 bg-gray-50 flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-700">
-            แสดง {(currentPage - 1) * pageSize + 1} ถึง{" "}
-            {Math.min(currentPage * pageSize, totalCount)} จากทั้งหมด {totalCount} รายการ
-          </span>
-        </div>
+      <nav className="px-6 py-4 bg-gray-50 flex items-center justify-between">
+        <span className="text-sm text-gray-700">
+          แสดง {(currentPage - 1) * pageSize + 1} ถึง{" "}
+          {Math.min(currentPage * pageSize, totalCount)} จากทั้งหมด {totalCount} รายการ
+        </span>
         
-        <div className="flex items-center space-x-2">
-          {/* First page */}
-          <button
-            onClick={() => setCurrentPage(1)}
-            disabled={currentPage === 1}
-            className={`px-3 py-1 rounded ${
-              currentPage === 1
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-            title="หน้าแรก"
-          >
-            ««
-          </button>
-          
-          {/* Previous page */}
-          <button
-            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-            disabled={currentPage === 1}
-            className={`px-3 py-1 rounded ${
-              currentPage === 1
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-            title="หน้าก่อนหน้า"
-          >
-            «
-          </button>
-
-          {/* Page numbers */}
-          {pageNumbers.map(number => (
+        <ul className="flex items-center space-x-2">
+          <li>
             <button
-              key={number}
-              onClick={() => setCurrentPage(number)}
+              onClick={() => setCurrentPage(1)}
+              disabled={currentPage === 1}
               className={`px-3 py-1 rounded ${
-                currentPage === number
-                  ? 'bg-blue-500 text-white'
+                currentPage === 1
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
+              title="หน้าแรก"
             >
-              {number}
+              ««
             </button>
+          </li>
+          
+          <li>
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className={`px-3 py-1 rounded ${
+                currentPage === 1
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+              title="หน้าก่อนหน้า"
+            >
+              «
+            </button>
+          </li>
+
+          {pageNumbers.map(number => (
+            <li key={number}>
+              <button
+                onClick={() => setCurrentPage(number)}
+                className={`px-3 py-1 rounded ${
+                  currentPage === number
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                {number}
+              </button>
+            </li>
           ))}
 
-          {/* Next page */}
-          <button
-            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-            disabled={currentPage === totalPages}
-            className={`px-3 py-1 rounded ${
-              currentPage === totalPages
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-            title="หน้าถัดไป"
-          >
-            »
-          </button>
+          <li>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+              className={`px-3 py-1 rounded ${
+                currentPage === totalPages
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+              title="หน้าถัดไป"
+            >
+              »
+            </button>
+          </li>
 
-          {/* Last page */}
-          <button
-            onClick={() => setCurrentPage(totalPages)}
-            disabled={currentPage === totalPages}
-            className={`px-3 py-1 rounded ${
-              currentPage === totalPages
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-            title="หน้าสุดท้าย"
-          >
-            »»
-          </button>
-        </div>
-      </div>
+          <li>
+            <button
+              onClick={() => setCurrentPage(totalPages)}
+              disabled={currentPage === totalPages}
+              className={`px-3 py-1 rounded ${
+                currentPage === totalPages
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+              title="หน้าสุดท้าย"
+            >
+              »»
+            </button>
+          </li>
+        </ul>
+      </nav>
     );
   };
 

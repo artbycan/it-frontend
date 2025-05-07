@@ -20,14 +20,18 @@ export default function SearchSelectUser({ value, onChange = () => {}, required 
         const result = await response.json()
         
         if (result.status === 200) {
-          // Flatten the nested array structure
-          const flattenedUsers = result.data.map(userArray => userArray[0])
-          setUsers(flattenedUsers)
+          // Ensure data exists and is an array before mapping
+          const flattenedUsers = Array.isArray(result.data) 
+            ? result.data.map(userArray => Array.isArray(userArray) ? userArray[0] : userArray)
+            : [];
+          setUsers(flattenedUsers);
         } else {
           setError(result.message || 'ไม่สามารถดึงข้อมูลผู้ใช้ได้')
         }
       } catch (err) {
+        console.error('Error fetching users:', err);
         setError('เกิดข้อผิดพลาดในการเชื่อมต่อ')
+        setUsers([]); // Ensure users is an empty array on error
       } finally {
         setLoading(false)
       }
@@ -46,14 +50,20 @@ export default function SearchSelectUser({ value, onChange = () => {}, required 
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const selectedUser = users.find(user => user.user_id === value)
+  // Add null check when finding selected user
+  const selectedUser = users.length > 0 && value 
+    ? users.find(user => user?.user_id == value) || null 
+    : null;
   
+  // Add null check when filtering users
   const filteredUsers = users.filter(user =>
-    user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.f_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.l_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+    user && (
+      user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.f_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.l_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
 
   const getRoleColor = (role) => {
     switch(role) {
@@ -63,8 +73,6 @@ export default function SearchSelectUser({ value, onChange = () => {}, required 
       default: return 'bg-gray-100 text-gray-800'
     }
   }
-
-
 
   return (
     <div className="relative_user" ref={dropdownRef}>
@@ -111,14 +119,14 @@ export default function SearchSelectUser({ value, onChange = () => {}, required 
                     l_name: user.l_name
                   })}
                   className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${
-                    value === user.user_id ? 'bg-blue-50' : ''
+                    value == user.user_id ? 'bg-blue-50' : ''
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="font-medium">{user.username}</div>
                       <div className="text-sm text-gray-500">
-                        ชื่อ :{user.f_name} นาามสกุล :{user.l_name} e-mail :{user.email}
+                        ชื่อ :{user.f_name} นามสกุล :{user.l_name} e-mail :{user.email}
                       </div>
                     </div>
                     <span className={`px-2 py-1 text-xs rounded-full font-medium ${getRoleColor(user.role)}`}>
