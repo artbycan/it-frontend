@@ -64,12 +64,6 @@ const NavMenu = () => {
                 ระบบแจ้งซ่อม
               </Link>
               <Link
-                href="/assets"
-                className="py-4 px-2 text-gray-500 hover:text-blue-500 transition duration-300"
-              >
-                ข้อมูลครุภัณฑ์
-              </Link>
-              <Link
                 href="/about"
                 className="py-4 px-2 text-gray-500 hover:text-blue-500 transition duration-300"
               >

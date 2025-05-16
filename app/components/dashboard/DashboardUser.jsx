@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Box, Container, Grid, TextField, Card, CardContent, Typography } from "@mui/material";
 import { API_ENDPOINTS } from "@/app/config/api";
+import { getAuthHeaders } from "@/app/utils/auth";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -38,7 +39,10 @@ export default function DashboardUser() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(API_ENDPOINTS.users.getAll);
+        const response = await fetch(API_ENDPOINTS.users.getAll,
+          {
+            headers: getAuthHeaders(),
+          });
         const result = await response.json();
 
         if (result.status === 200) {

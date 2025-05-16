@@ -1,6 +1,7 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { API_ENDPOINTS } from '@/app/config/api'
+import { useState, useEffect } from 'react';
+import { API_ENDPOINTS } from '@/app/config/api';
+import { getAuthHeaders } from "@/app/utils/auth";
 
 export default function SearchSelectAssets({ onAssetSelected }) {
   const [assets, setAssets] = useState([])
@@ -16,9 +17,7 @@ export default function SearchSelectAssets({ onAssetSelected }) {
         setLoading(true)
         //ดึงข้อมูลครุภัณฑ์ที่มีสถานะ 0 (ใช้งานอยู่)
         const response = await fetch(`${API_ENDPOINTS.assets.getByStatus}/0`, {
-          headers: {
-            'Accept': 'application/json'
-          }
+          headers: getAuthHeaders(),
         })
 
         const result = await response.json()

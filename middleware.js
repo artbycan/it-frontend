@@ -4,7 +4,7 @@ import { sessionOptions } from './lib/session'
 
 export async function middleware(request) {
   // Define public paths that don't require authentication
-  const publicPaths = ['/', '/about', '/login','/singup']
+  const publicPaths = [ '/about', '/login','/singup']
   const isPublicPath = publicPaths.some(path => 
     request.nextUrl.pathname === path || 
     request.nextUrl.pathname.startsWith(path + '/')

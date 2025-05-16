@@ -1,10 +1,14 @@
 "use server";
 import { API_ENDPOINTS } from "../config/api";
 import AssetStatus from "@/app/components/assets/AssetStatus";
+import { getAuthHeaders } from "@/app/utils/auth";
 
 async function getAssets() {
   try {
-    const response = await fetch(`${API_ENDPOINTS.assets.getRange}/0/0`);
+    const response = await fetch(`${API_ENDPOINTS.assets.getRange}/0/0`,
+                      {
+                        headers: getAuthHeaders(),
+                      });
     const result = await response.json();
     if (result.status === 200) {
       return result.data;

@@ -16,6 +16,7 @@ import { Bar, Pie } from 'react-chartjs-2';
 import { format } from 'date-fns';
 import { th } from 'date-fns/locale';
 import StockUsageChart from './StockUsageChart';
+import { getAuthHeaders } from '@/app/utils/auth';
 
 ChartJS.register(
   CategoryScale,
@@ -48,10 +49,7 @@ export default function DashboardStock() {
       try {
         // First API call - stock data
         const stockResponse = await fetch(`${API_ENDPOINTS.stock_levels.getAll}`, {
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
+          headers: getAuthHeaders()
         });
 
         if (!stockResponse.ok) {
@@ -70,10 +68,7 @@ export default function DashboardStock() {
 
           // Second API call - usage data
           const usageResponse = await fetch(`${API_ENDPOINTS.stock_levels.getStockUse}`, {
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            }
+            headers: getAuthHeaders()
           });
 
           if (!usageResponse.ok) {

@@ -131,7 +131,11 @@ export default function LineCallback() {
               `${result.data.f_name} ${result.data.l_name}`
             );
             localStorage.setItem("user_id", result.data.user_id);
-            router.push("/repair");
+            localStorage.setItem(
+              "jwt_token",
+              result.data.jwt_token.access_token
+            );
+            router.push("/about");
           }
         } else {
           setError(result.message || "เข้าสู่ระบบไม่สำเร็จ");

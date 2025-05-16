@@ -32,7 +32,7 @@ const AdminLayout = ({ children }) => {
   }
 
   const menuItems = [
-    { name: 'หน้าแรก', path: '/', icon: '🏠' },
+    { name: 'หน้าแรก-admin', path: '/admin', icon: '🏠' },
     { name: 'แดชบอร์ด', path: '/admin/dashboard', icon: '📊' },
     { name: 'การแจ้งซ่อม', path: '/admin/repair', icon: '🔧' },
     { name: 'สต๊อคอะไหล่', path: '/admin/stock_levels', icon: '📦' },    

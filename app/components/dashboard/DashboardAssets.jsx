@@ -15,6 +15,7 @@ import {
 import { Bar, Pie } from 'react-chartjs-2';
 import { format } from 'date-fns';
 import { th } from 'date-fns/locale';
+import { getAuthHeaders } from "@/app/utils/auth";
 
 // Register ChartJS components
 ChartJS.register(
@@ -44,7 +45,10 @@ export default function DashboardAssets() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${API_ENDPOINTS.assets.getRange}/0/0`);
+        const response = await fetch(`${API_ENDPOINTS.assets.getRange}/0/0`,
+          {
+            headers: getAuthHeaders(),
+          });
         const result = await response.json();
 
         if (result.status === 200) {

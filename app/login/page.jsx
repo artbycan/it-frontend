@@ -63,6 +63,7 @@ export default function LoginPage() {
           localStorage.setItem('username', result.data.username)
           localStorage.setItem('user_fullname', `${result.data.f_name} ${result.data.l_name}`)
           localStorage.setItem('user_id', result.data.user_id)
+          localStorage.setItem('jwt_token', result.data.jwt_token.access_token)
 
           // Redirect to admin dashboard
           router.push('/')

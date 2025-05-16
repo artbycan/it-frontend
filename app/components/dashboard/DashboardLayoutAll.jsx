@@ -5,6 +5,7 @@ import { API_ENDPOINTS } from "@/app/config/api";
 import StatisticsCard from "./StatisticsCard";
 import RepairStatusChart from "./RepairStatusChart";
 import RecentRepairs from "./RecentRepairs";
+import { getAuthHeaders } from "@/app/utils/auth";
 
 export default function DashboardLayoutAll() {
   const [maintenanceData, setMaintenanceData] = useState([]);
@@ -12,14 +13,16 @@ export default function DashboardLayoutAll() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dateRange, setDateRange] = useState({
-    startDate: '',
-    endDate: ''
+    startDate: "",
+    endDate: "",
   });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch( `${API_ENDPOINTS.maintenance.getAll}` );
+        const response = await fetch(`${API_ENDPOINTS.maintenance.getAll}`, {
+          headers: getAuthHeaders(),
+        });
         const result = await response.json();
 
         if (result.status === 200) {
@@ -42,13 +45,13 @@ export default function DashboardLayoutAll() {
   useEffect(() => {
     if (!maintenanceData.length) return;
 
-    const filtered = maintenanceData.filter(item => {
+    const filtered = maintenanceData.filter((item) => {
       if (!dateRange.startDate || !dateRange.endDate) return true;
-      
+
       const itemDate = new Date(item.request_date);
       const start = new Date(dateRange.startDate);
       const end = new Date(dateRange.endDate);
-      
+
       return itemDate >= start && itemDate <= end;
     });
 
@@ -69,39 +72,39 @@ export default function DashboardLayoutAll() {
 
   // Handle date changes
   const handleDateChange = (field) => (event) => {
-    setDateRange(prev => ({
+    setDateRange((prev) => ({
       ...prev,
-      [field]: event.target.value
+      [field]: event.target.value,
     }));
   };
 
   // Get latest repair
   const getLatestRepair = (data) => {
     if (!data || data.length === 0) return [];
-    
+
     // Sort by created_at in descending order and take the first item
-    return [data.sort((a, b) => 
-      new Date(b.created_at) - new Date(a.created_at)
-    )[0]];
+    return [
+      data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0],
+    ];
   };
 
   return (
     <Box sx={{ py: 8 }} title="DashboardAll">
       <Container maxWidth="xl">
         {/* Add Date Range Filters */}
-        <Box sx={{ mb: 4, display: 'flex', gap: 2, justifyContent: 'center' }}>
+        <Box sx={{ mb: 4, display: "flex", gap: 2, justifyContent: "center" }}>
           <TextField
             type="date"
             label="วันที่เริ่มต้น"
             value={dateRange.startDate}
-            onChange={handleDateChange('startDate')}
+            onChange={handleDateChange("startDate")}
             InputLabelProps={{ shrink: true }}
           />
           <TextField
             type="date"
             label="วันที่สิ้นสุด"
             value={dateRange.endDate}
-            onChange={handleDateChange('endDate')}
+            onChange={handleDateChange("endDate")}
             InputLabelProps={{ shrink: true }}
           />
         </Box>
@@ -154,9 +157,9 @@ export default function DashboardLayoutAll() {
 
           <Grid item xs={12} lg={12}>
             <Box sx={{ height: "100%", width: "900px" }}>
-              <RecentRepairs 
-                data={getLatestRepair(filteredData)} 
-                loading={loading} 
+              <RecentRepairs
+                data={getLatestRepair(filteredData)}
+                loading={loading}
               />
             </Box>
           </Grid>

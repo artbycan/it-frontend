@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { API_ENDPOINTS } from '@/app/config/api'
+import { getAuthHeaders } from "@/app/utils/auth";
 
 export default function TechnicianAssignment({ onTechnicianAssigned }) {
   const [technician, setTechnician] = useState(null)
@@ -13,9 +14,7 @@ export default function TechnicianAssignment({ onTechnicianAssigned }) {
       setError(null)
       
       const response = await fetch(API_ENDPOINTS.task.assignTaskRandom, {
-        headers: {
-          'Accept': 'application/json',
-        }
+        headers: getAuthHeaders(),
       })
       
       const result = await response.json()

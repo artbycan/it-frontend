@@ -9,6 +9,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { Dialog, DialogContent, DialogTitle, IconButton } from '@mui/material';
 //import CloseIcon from '@mui/icons-material/Close';
 import { API_ENDPOINTS } from "@/app/config/api";
+import { getAuthHeaders } from "@/app/utils/auth";
 
 interface MaintenanceRequest {
   request_id: number;
@@ -46,7 +47,10 @@ export default function Home() {
   useEffect(() => {
     const fetchMaintenanceData = async () => {
       try {
-        const response = await fetch(`${API_ENDPOINTS.maintenance.getAll}`);
+        const response = await fetch(`${API_ENDPOINTS.maintenance.getAll}`,
+                  {
+                    headers: getAuthHeaders(),
+                  });
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }

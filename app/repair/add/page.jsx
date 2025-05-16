@@ -15,6 +15,7 @@ import {
 } from "@/app/components/repair/RepairStatus";
 import TechnicianAssignment from "@/app/components/repair/TechnicianAssignment";
 import SearchSelectAssets from "@/app/components/repair/SearchSelectAssets";
+import { getAuthHeaders } from "@/app/utils/auth";
 
 export default function AddRepair() {
   const router = useRouter();
@@ -65,10 +66,7 @@ export default function AddRepair() {
     try {
       const response = await fetch(API_ENDPOINTS.maintenance.create, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify(formData),
       });
 
