@@ -66,7 +66,7 @@ export default function LoginPage() {
           localStorage.setItem('jwt_token', result.data.jwt_token.access_token)
 
           // Redirect to admin dashboard
-          router.push('/')
+          router.push('/repair')
         } else {
           setError('เกิดข้อผิดพลาดในการสร้างเซสชัน')
         }

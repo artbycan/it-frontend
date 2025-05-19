@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import UserLayout from '@/app/components/UserLayout'
 import { API_ENDPOINTS } from '@/app/config/api'
 import { getAuthHeaders } from '@/app/utils/auth'
-import EditUserModal from '@/app/components/users/EditUserModal'
+import EditUserModal from '@/app/components/users/EditUserModalOneuser'
 
 export default function UsersPage() {
   const [userData, setUserData] = useState(null)

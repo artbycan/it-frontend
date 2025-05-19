@@ -6,37 +6,7 @@ import { logout } from "../utils/auth"
 
 const NavMenu = () => {
   const router = useRouter()
-  const [username, setUsername] = useState("Guest")
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
-  useEffect(() => {
-    const storedUsername = localStorage.getItem("username")
-    if (storedUsername) {
-      setUsername(storedUsername)
-      setIsLoggedIn(true)
-    }
-  }, [])
-
-  const handleLoginClick = async (e) => {
-    e.preventDefault()
-    if (isLoggedIn) {
-      try {
-        const success = await logout()
-        if (success) {
-          setUsername("Guest")
-          setIsLoggedIn(false)
-          router.push('/login?message=ออกจากระบบสำเร็จ')
-        } else {
-          router.push('/login?message=เกิดข้อผิดพลาดในการออกจากระบบ')
-        }
-      } catch (error) {
-        console.error('Logout error:', error)
-        router.push('/login?message=เกิดข้อผิดพลาดในการออกจากระบบ')
-      }
-    } else {
-      router.push('/login')
-    }
-  }
 
   return (
     <nav className="bg-white shadow-lg" style={{ position: 'sticky', top: 0, zIndex: 1000 }}>
@@ -77,23 +47,7 @@ const NavMenu = () => {
               </Link>
             </div>
           </div>
-          {/* Secondary Nav */}
-          <div className="hidden md:flex items-center space-x-4">
-            <button
-              onClick={handleLoginClick}
-              className="py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600 transition duration-300"
-            >
-              {isLoggedIn ? 'Logout' : 'Login'}
-            </button>
-            {!isLoggedIn && (
-              <Link
-                href="/signup"
-                className="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300"
-              >
-                สมัครใช้งาน
-              </Link>
-            )}
-          </div>
+          
           
         </div>
       </div>

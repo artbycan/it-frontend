@@ -135,7 +135,7 @@ export default function LineCallback() {
               "jwt_token",
               result.data.jwt_token.access_token
             );
-            router.push("/about");
+            router.push("/repair");
           }
         } else {
           setError(result.message || "เข้าสู่ระบบไม่สำเร็จ");

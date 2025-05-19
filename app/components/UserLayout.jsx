@@ -4,10 +4,12 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { logout } from '../utils/auth'
 
+
 const UserLayout = ({ children }) => {
   const [username, setUsername] = useState('Guest')
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const router = useRouter()
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   const menuItems = [
     { name: 'หน้าแรก', path: '/', icon: '🏠' },
@@ -20,6 +22,7 @@ const UserLayout = ({ children }) => {
     const storedUsername = localStorage.getItem('username')
     if (storedUsername) {
       setUsername(storedUsername)
+      setIsLoggedIn(true)
     }
   }, [])
 
@@ -37,6 +40,29 @@ const UserLayout = ({ children }) => {
       router.push('/login?message=เกิดข้อผิดพลาดในการออกจากระบบ')
     }
   }
+
+
+  const handleLoginClick = async (e) => {
+    e.preventDefault()
+    if (isLoggedIn) {
+      try {
+        const success = await logout()
+        if (success) {
+          setUsername("Guest")
+          setIsLoggedIn(false)
+          router.push('/login?message=ออกจากระบบสำเร็จ')
+        } else {
+          router.push('/login?message=เกิดข้อผิดพลาดในการออกจากระบบ')
+        }
+      } catch (error) {
+        console.error('Logout error:', error)
+        router.push('/login?message=เกิดข้อผิดพลาดในการออกจากระบบ')
+      }
+    } else {
+      router.push('/login')
+    }
+  }
+
 
   return (
     <div className="min-h-screen flex bg-gray-100">
@@ -56,19 +82,37 @@ const UserLayout = ({ children }) => {
             <Link
               key={item.path}
               href={item.path}
-              className="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-blue-600"
+              className="flex items-center px-6 py-3 text-gray-600 hover:bg-green-300 hover:text-blue-600"
             >
               <span className="mr-3">{item.icon}</span>
               {item.name}
             </Link>
           ))}
-          <button
+          {/* <button
             onClick={handleLogout}
             className="w-full flex items-center px-6 py-3 text-red-600 hover:bg-red-50"
           >
             <span className="mr-3">🚪</span>
             ออกจากระบบ
-          </button>
+          </button> */}
+          {/* Secondary Nav */}
+          <div className="hidden md:flex items-center space-x-4">
+            <button
+              onClick={handleLoginClick}
+              className="py-2 px-6 bg-red-800 text-white rounded hover:bg-red-500 transition duration-300"
+            >
+              <span className="mr-3">🚪</span>
+              {isLoggedIn ? 'ออกจากระบบ' : 'เข้าสู่ระบบ'}
+            </button>
+            {!isLoggedIn && (
+              <Link
+                href="/signup"
+                className="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300"
+              >
+                สมัครใช้งาน
+              </Link>
+            )}
+          </div>
         </nav>
       </aside>
 
